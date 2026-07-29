@@ -62,7 +62,7 @@ export function Dashboard() {
   ];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto text-left font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -78,10 +78,10 @@ export function Dashboard() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="secondary" icon={Globe} onClick={() => navigate("/website/new")}>
+          <Button variant="secondary" icon={Globe} onClick={() => navigate("/app/website/new")}>
             Analyze Website
           </Button>
-          <Button variant="primary" icon={PlusCircle} onClick={() => navigate("/marketing/new")}>
+          <Button variant="primary" icon={PlusCircle} onClick={() => navigate("/app/marketing/new")}>
             New Campaign Run
           </Button>
         </div>
@@ -144,7 +144,7 @@ export function Dashboard() {
           </p>
           <div className="pt-2 border-t border-border flex items-center justify-between">
             <span className="text-xs font-mono text-ink-subtle">{runs.length} total campaign runs</span>
-            <Button size="sm" variant="primary" icon={ArrowRight} onClick={() => navigate("/marketing")}>
+            <Button size="sm" variant="primary" icon={ArrowRight} onClick={() => navigate("/app/marketing")}>
               Launch Module 1
             </Button>
           </div>
@@ -166,7 +166,7 @@ export function Dashboard() {
           </p>
           <div className="pt-2 border-t border-border flex items-center justify-between">
             <span className="text-xs font-mono text-ink-subtle">{analyses.length} website audits</span>
-            <Button size="sm" variant="secondary" icon={ArrowRight} onClick={() => navigate("/website")}>
+            <Button size="sm" variant="secondary" icon={ArrowRight} onClick={() => navigate("/app/website")}>
               Launch Module 2
             </Button>
           </div>
@@ -190,7 +190,7 @@ export function Dashboard() {
               pendingAssets.slice(0, 4).map((asset, i) => (
                 <div
                   key={i}
-                  onClick={() => navigate(`/marketing/runs/${asset.runId}`)}
+                  onClick={() => navigate(`/app/marketing/runs/${asset.runId}`)}
                   className="p-3 rounded bg-raise hover:bg-raise/80 border border-border cursor-pointer transition-colors flex items-center justify-between"
                 >
                   <div className="space-y-0.5 max-w-md">

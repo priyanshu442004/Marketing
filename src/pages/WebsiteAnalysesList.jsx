@@ -95,7 +95,7 @@ export function WebsiteAnalysesList() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -112,7 +112,7 @@ export function WebsiteAnalysesList() {
         <Button
           variant="primary"
           icon={PlusCircle}
-          onClick={() => navigate("/website/new")}
+          onClick={() => navigate("/app/website/new")}
         >
           New Analysis
         </Button>
@@ -181,7 +181,7 @@ export function WebsiteAnalysesList() {
             {filteredAnalyses.map((item) => (
               <TableRow
                 key={item.id}
-                onClick={() => navigate(`/website/analyses/${item.id}`)}
+                onClick={() => navigate(`/app/website/analyses/${item.id}`)}
               >
                 <TableCell>
                   <div className="flex items-center gap-2.5">
@@ -226,7 +226,7 @@ export function WebsiteAnalysesList() {
                         <button
                           onClick={() => {
                             setActiveMenuId(null);
-                            navigate(`/website/analyses/${item.id}`);
+                            navigate(`/app/website/analyses/${item.id}`);
                           }}
                           className="w-full text-left px-3 py-1.5 hover:bg-raise flex items-center gap-2 text-ink"
                         >

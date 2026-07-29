@@ -24,21 +24,21 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Build breadcrumb based on route
+  // Build breadcrumb based on route under /app
   const getBreadcrumbs = () => {
     const path = location.pathname;
-    if (path === "/") return [{ label: "Dashboard" }];
-    if (path === "/marketing") return [{ label: "Campaign Runs" }];
-    if (path === "/marketing/new")
-      return [{ label: "Campaign Runs", to: "/marketing" }, { label: "New Campaign Run" }];
-    if (path.startsWith("/marketing/runs/"))
-      return [{ label: "Campaign Runs", to: "/marketing" }, { label: "Run Detail" }];
-    if (path === "/website") return [{ label: "Site Analyses" }];
-    if (path === "/website/new")
-      return [{ label: "Site Analyses", to: "/website" }, { label: "New Analysis" }];
-    if (path.startsWith("/website/analyses/"))
-      return [{ label: "Site Analyses", to: "/website" }, { label: "Analysis Detail" }];
-    if (path === "/settings") return [{ label: "Settings" }];
+    if (path === "/app") return [{ label: "Dashboard" }];
+    if (path === "/app/marketing") return [{ label: "Campaign Runs" }];
+    if (path === "/app/marketing/new")
+      return [{ label: "Campaign Runs", to: "/app/marketing" }, { label: "New Campaign Run" }];
+    if (path.startsWith("/app/marketing/runs/"))
+      return [{ label: "Campaign Runs", to: "/app/marketing" }, { label: "Run Detail" }];
+    if (path === "/app/website") return [{ label: "Site Analyses" }];
+    if (path === "/app/website/new")
+      return [{ label: "Site Analyses", to: "/app/website" }, { label: "New Analysis" }];
+    if (path.startsWith("/app/website/analyses/"))
+      return [{ label: "Site Analyses", to: "/app/website" }, { label: "Analysis Detail" }];
+    if (path === "/app/settings") return [{ label: "Settings" }];
     return [];
   };
 

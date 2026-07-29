@@ -121,11 +121,11 @@ export function NewMarketingRun() {
       variant: "success",
     });
 
-    navigate(`/marketing/runs/${runId}`);
+    navigate(`/app/marketing/runs/${runId}`);
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto text-left font-sans">
       {/* Header */}
       <div>
         <span className="text-xs font-mono uppercase tracking-wider text-ink-subtle">
@@ -508,7 +508,7 @@ export function NewMarketingRun() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => navigate("/marketing")}
+              onClick={() => navigate("/app/marketing")}
             >
               Cancel
             </Button>

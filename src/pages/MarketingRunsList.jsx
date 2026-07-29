@@ -89,7 +89,7 @@ export function MarketingRunsList() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -106,7 +106,7 @@ export function MarketingRunsList() {
         <Button
           variant="primary"
           icon={PlusCircle}
-          onClick={() => navigate("/marketing/new")}
+          onClick={() => navigate("/app/marketing/new")}
         >
           New Campaign Run
         </Button>
@@ -188,7 +188,7 @@ export function MarketingRunsList() {
             {filteredRuns.map((run) => (
               <TableRow
                 key={run.id}
-                onClick={() => navigate(`/marketing/runs/${run.id}`)}
+                onClick={() => navigate(`/app/marketing/runs/${run.id}`)}
               >
                 <TableCell>
                   <div className="space-y-0.5">
@@ -241,7 +241,7 @@ export function MarketingRunsList() {
                         <button
                           onClick={() => {
                             setActiveMenuId(null);
-                            navigate(`/marketing/runs/${run.id}`);
+                            navigate(`/app/marketing/runs/${run.id}`);
                           }}
                           className="w-full text-left px-3 py-1.5 hover:bg-raise flex items-center gap-2 text-ink"
                         >

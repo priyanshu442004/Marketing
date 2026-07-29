@@ -22,21 +22,21 @@ export function Sidebar() {
   const navGroups = [
     {
       items: [
-        { label: "Overview", to: "/", icon: LayoutDashboard, exact: true },
+        { label: "Overview", to: "/app", icon: LayoutDashboard, exact: true },
       ],
     },
     {
       title: "AI Marketing Agent",
       items: [
-        { label: "Campaign Runs", to: "/marketing", icon: Megaphone },
-        { label: "New Campaign Run", to: "/marketing/new", icon: PlusCircle },
+        { label: "Campaign Runs", to: "/app/marketing", icon: Megaphone },
+        { label: "New Campaign Run", to: "/app/marketing/new", icon: PlusCircle },
       ],
     },
     {
       title: "Website Intelligence",
       items: [
-        { label: "Site Analyses", to: "/website", icon: Globe },
-        { label: "New Analysis", to: "/website/new", icon: PlusCircle },
+        { label: "Site Analyses", to: "/app/website", icon: Globe },
+        { label: "New Analysis", to: "/app/website/new", icon: PlusCircle },
       ],
     },
   ];
@@ -46,7 +46,7 @@ export function Sidebar() {
       {/* Brand Header */}
       <div>
         <div className="h-14 px-5 flex items-center border-b border-border">
-          <NavLink to="/" className="flex items-center gap-2 group">
+          <NavLink to="/app" className="flex items-center gap-2 group">
             <div className="font-semibold text-lg tracking-tight text-ink">
               {BRAND}
               <span className="text-accent">.</span>
@@ -70,7 +70,7 @@ export function Sidebar() {
                 const isActive = item.exact
                   ? location.pathname === item.to
                   : location.pathname.startsWith(item.to) &&
-                    (item.to !== "/" || location.pathname === "/");
+                    (item.to !== "/app" || location.pathname === "/app");
 
                 const Icon = item.icon;
 
@@ -98,10 +98,10 @@ export function Sidebar() {
       {/* Footer User Chip & Settings */}
       <div className="p-3 border-t border-border space-y-2 bg-surface">
         <NavLink
-          to="/settings"
+          to="/app/settings"
           className={cn(
             "flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-control transition-colors",
-            location.pathname === "/settings"
+            location.pathname === "/app/settings"
               ? "bg-accent-tint text-accent font-semibold"
               : "text-ink-muted hover:text-ink hover:bg-raise"
           )}

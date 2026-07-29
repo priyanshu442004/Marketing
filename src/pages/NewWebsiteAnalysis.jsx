@@ -106,11 +106,11 @@ export function NewWebsiteAnalysis() {
       variant: "success",
     });
 
-    navigate(`/website/analyses/${newId}`);
+    navigate(`/app/website/analyses/${newId}`);
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto text-left font-sans">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -128,7 +128,7 @@ export function NewWebsiteAnalysis() {
           variant="ghost"
           size="sm"
           icon={ArrowLeft}
-          onClick={() => navigate("/website")}
+          onClick={() => navigate("/app/website")}
         >
           Back to List
         </Button>
@@ -274,7 +274,7 @@ export function NewWebsiteAnalysis() {
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-border">
-            <Button type="button" variant="secondary" onClick={() => navigate("/website")}>
+            <Button type="button" variant="secondary" onClick={() => navigate("/app/website")}>
               Cancel
             </Button>
             <Button type="submit" variant="primary" icon={Sparkles}>
@@ -284,7 +284,7 @@ export function NewWebsiteAnalysis() {
         </form>
 
         {/* Right Instruction & Example Panel (5 cols) */}
-        <div className="lg:col-span-5 bg-surface p-5 rounded-card border border-border space-y-4">
+        <div className="lg:col-span-5 bg-surface p-5 rounded-card border border-border space-y-4 font-sans text-left">
           <div className="flex items-center gap-2 text-ink border-b border-border pb-3">
             <HelpCircle className="w-4 h-4 text-accent shrink-0" />
             <h3 className="text-sm font-semibold">How to Provide Good Context</h3>
