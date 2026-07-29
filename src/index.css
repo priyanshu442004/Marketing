@@ -1,0 +1,55 @@
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #FBFAF7;
+  --surface: #FFFFFF;
+  --raise: #F5F3EE;
+  --border: #E8E4DB;
+  --border-strong: #D8D3C7;
+  --ink: #1B1A16;
+  --ink-muted: #6B675E;
+  --ink-subtle: #9A9488;
+  --accent: #0F6E5E;
+  --accent-hover: #0B584B;
+  --accent-tint: #E9F2EF;
+  --success: #1E7A4B;
+  --warning: #B7791F;
+  --danger: #B4322A;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: 'Geist Variable', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus outline styling */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-subtle);
+}
