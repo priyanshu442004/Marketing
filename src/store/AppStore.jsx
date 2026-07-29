@@ -61,6 +61,22 @@ export function AppProvider({ children }) {
           updatedOutputs.blogPost = { ...updatedOutputs.blogPost, status };
         }
 
+        if (updatedOutputs.landingPage && updatedOutputs.landingPage.id === assetId) {
+          updatedOutputs.landingPage = { ...updatedOutputs.landingPage, status };
+        }
+
+        if (updatedOutputs.whitepaper && updatedOutputs.whitepaper.id === assetId) {
+          updatedOutputs.whitepaper = { ...updatedOutputs.whitepaper, status };
+        }
+
+        if (updatedOutputs.newsletter && updatedOutputs.newsletter.id === assetId) {
+          updatedOutputs.newsletter = { ...updatedOutputs.newsletter, status };
+        }
+
+        if (updatedOutputs.caseStudy && updatedOutputs.caseStudy.id === assetId) {
+          updatedOutputs.caseStudy = { ...updatedOutputs.caseStudy, status };
+        }
+
         if (updatedOutputs.linkedinPosts) {
           updatedOutputs.linkedinPosts = updatedOutputs.linkedinPosts.map((item) =>
             item.id === assetId ? { ...item, status } : item

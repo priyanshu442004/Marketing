@@ -1,0 +1,128 @@
+=== PAGE 1 ===
+Product Overview: AI Marketing Platform  
+The AI Marketing Platform consists of two independent modules, each solving a different business problem. 
+Module 1: AI Marketing Agent 
+Objective: Automate the complete marketing lifecycle from market research to content generation using 
+multiple specialized AI agents. 
+Marketing Discovery 
+The platform supports two methods of initiating marketing workflows. 
+A. Automated Market Monitoring 
+Designed for continuous market intelligence. This enables businesses to receive marketing opportunities 
+automatically without manually providing topics. 
+• User Configuration: 
+• RSS Feed Source(s) 
+• Industry 
+• Keywords 
+• Categories 
+• Monitoring Frequency (Daily / Weekly / Custom) 
+Workflow: RSS Feed → Latest News Collection → Automatic Trend Identification → Research Agent → 
+Competitive Intelligence → Remaining Marketing Workflow. 
+B. Manual Topic Research 
+Designed for targeted content creation. The provided topic initiates the complete AI Marketing workflow. 
+• User Input: 
+• Topic (e.g., Agentic AI) 
+• Industry (e.g., Manufacturing) 
+• Business Objective (e.g., Generate Leads) 
+• Target Audience (e.g., CXOs) 
+AI Agents 
+1. Marketing Supervisor Agent 
+Responsibilities: Workflow orchestration, agent execution, dependency management, final context 
+coordination. 
+2. Trend Identification Agent 
+Responsibilities: Trending keywords, search trends, popular hashtags, frequently searched questions, 
+seasonal opportunities. 
+Output: Trend Report, Keyword Opportunities. 
+
+=== PAGE 2 ===
+3. Research Agent 
+Responsibilities: Industry research, market reports, customer pain points, emerging technologies, business 
+opportunities, latest news. 
+Output: Research Summary, Business Insights. 
+4. Competitive Intelligence Agent 
+Responsibilities: Analyze competitors through Website, Blogs, LinkedIn, Case Studies, Advertisements, SEO 
+Keywords, Messaging, Positioning. 
+Output: Competitor Benchmark, Content Gap Analysis, Positioning Opportunities. 
+5. Context Merger 
+Combines outputs from Trend Identification, Research, and Competitive Intelligence. 
+Produces: Unified Marketing Context. 
+6. Content Strategy Agent 
+Determines: Content Type, Marketing Objective, Audience, Communication Style, Distribution Channels. 
+Possible outputs: Blog, LinkedIn, Newsletter, Webinar, Whitepaper, Video Script, Carousel, Case Study. 
+7. Content Planning Agent 
+Creates: Weekly Calendar, Monthly Calendar, Publishing Schedule, Platform Selection, Best Publishing 
+Time. 
+8. SEO Agent 
+Optimizes: Primary Keywords, Secondary Keywords, Meta Title, Meta Description, Search Intent, Internal 
+Linking, FAQ Suggestions. 
+9. Content Generation Agent 
+Generates: Blogs, LinkedIn Posts, Articles, Newsletters, Landing Pages, Email Campaigns, Whitepapers, 
+Case Studies. 
+10. Creative Generation Agent 
+Generates: Images, Videos, Infographics, Marketing Creatives, Architecture Diagrams. 
+Human Approval: Every generated asset enters an approval workflow before publishing. Future versions 
+will support automated publishing. 
+Module 2: Website Intelligence Agent 
+Objective: Provide businesses with a comprehensive AI-powered website assessment by combining 
+website analysis, business context understanding, gap identification, and intelligent recommendations. 
+Unlike the Marketing Agent, this module evaluates an existing website against the business objectives and 
+identifies opportunities for improvement. 
+
+=== PAGE 3 ===
+User Inputs 
+1. 1. Business Information: 
+• Business Name 
+• Company Overview 
+• Products 
+• Services 
+• Target Audience 
+• Industry 
+• Business Goals 
+A dedicated Instruction & Example section will guide users on how to provide complete and accurate 
+business context. 
+2. 2. Website URL: 
+• The primary domain to be analyzed (e.g., https://companyname.com) 
+AI Agents 
+1. Website Structure Agent 
+Responsibilities: Crawl website, discover all pages, analyze website structure, navigation hierarchy, 
+internal links, technical overview, page inventory. 
+Output: Complete Website Structure Report. 
+2. Business Gap Analysis Agent 
+Uses Business Context and Website Content, comparing both to identify gaps. 
+• Analysis Areas: 
+• Business Alignment: Products covered, services covered, missing offerings, business messaging. 
+• Content Analysis: Missing pages, weak content, missing blogs, case studies, news section, FAQs. 
+• SEO Analysis: Keyword coverage, meta content, heading structure, content optimization. 
+• Conversion Analysis: CTA visibility, contact pages, lead forms, trust indicators. 
+• User Experience: Navigation, readability, content organization. 
+Output: Comprehensive Gap Analysis. 
+3. Recommendation & Scoring Agent 
+Consolidates findings from all previous agents. 
+• Generates: 
+• Website Health Score (0–100) 
+• Category-wise scores: Business Alignment, Technical Quality, SEO, Content Quality, User 
+Experience, Conversion Readiness. 
+• Recommendations: High, Medium, and Low Priority Improvements. 
+
+=== PAGE 4 ===
+• Suggests: New pages to create, pages to remove, content to improve, blog/news strategy, service 
+pages, SEO/conversion improvements, CTA recommendations, content expansion opportunities. 
+Final Deliverables 
+AI Marketing Agent 
+• Market Research Report 
+• Trend Analysis 
+• Competitive Intelligence Report 
+• Content Strategy 
+• Publishing Calendar 
+• SEO Recommendations 
+• Marketing Content 
+• Creative Assets 
+Website Intelligence Agent 
+• Website Structure Report 
+• Business Gap Analysis 
+• Website Health Score 
+• Category-wise Scorecard 
+• SEO Audit 
+• Content Audit 
+• Conversion Audit 
+• Prioritized Recommendations 
+• Website Improvement Roadmap 

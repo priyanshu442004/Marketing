@@ -583,12 +583,27 @@ export function ContentGenOutput({ outputs, runId, onUpdateStatus }) {
   if (!outputs) return null;
 
   const assetsList = [];
-  if (outputs.blogPost) assetsList.push({ type: "Blog Draft", ...outputs.blogPost });
+  if (outputs.blogPost) assetsList.push({ type: "Blog Post", ...outputs.blogPost });
   if (outputs.linkedinPosts) {
     outputs.linkedinPosts.forEach((lp) => assetsList.push({ type: "LinkedIn Post", ...lp }));
   }
   if (outputs.emailSequence) {
     outputs.emailSequence.forEach((em) => assetsList.push({ type: "Email Campaign", ...em }));
+  }
+  if (outputs.adVariants) {
+    outputs.adVariants.forEach((ad) => assetsList.push({ type: "Ad Copy Variant", ...ad }));
+  }
+  if (outputs.landingPage) {
+    assetsList.push({ type: "Landing Page Copy", ...outputs.landingPage });
+  }
+  if (outputs.whitepaper) {
+    assetsList.push({ type: "Whitepaper", ...outputs.whitepaper });
+  }
+  if (outputs.newsletter) {
+    assetsList.push({ type: "Newsletter", ...outputs.newsletter });
+  }
+  if (outputs.caseStudy) {
+    assetsList.push({ type: "Case Study", ...outputs.caseStudy });
   }
 
   const handleAction = (assetId, action) => {
@@ -603,9 +618,14 @@ export function ContentGenOutput({ outputs, runId, onUpdateStatus }) {
 
   return (
     <div className="space-y-4">
-      <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
-        Generated Multi-Format Assets
-      </h4>
+      <div className="flex items-center justify-between">
+        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
+          Generated Multi-Format Assets ({assetsList.length})
+        </h4>
+        <span className="text-[11px] font-mono text-ink-subtle">
+          Supported Formats: Blogs, LinkedIn, Newsletters, Landing Pages, Emails, Whitepapers, Case Studies
+        </span>
+      </div>
 
       <div className="space-y-4">
         {assetsList.map((asset) => (
@@ -620,7 +640,7 @@ export function ContentGenOutput({ outputs, runId, onUpdateStatus }) {
 
             {/* Document Content */}
             <div className="text-xs text-ink leading-relaxed bg-raise/40 p-4 rounded border border-border whitespace-pre-line font-sans">
-              {asset.content || asset.body}
+              {asset.content || asset.body || asset.headline}
             </div>
 
             {/* Action Bar */}

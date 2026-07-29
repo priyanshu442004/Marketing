@@ -127,8 +127,35 @@ export const initialRuns = [
       adVariants: [
         { id: "asset-804", headline: "Zero-Downtime Smart Manufacturing", body: "Deploy edge AI telemetry across legacy PLCs in under 48 hours.", status: "pending" }
       ],
+      landingPage: {
+        id: "asset-807",
+        title: "Landing Page: Edge AI Telemetry for Smart Factory Maintenance",
+        status: "pending",
+        content: `### Hero: Zero-Downtime Smart Manufacturing\nDeploy offline-first edge AI telemetry across legacy Siemens & Allen-Bradley PLCs in under 48 hours.\n\n### Primary CTA: Schedule 15-Minute Plant Assessment\n- Guaranteed 34% reduction in equipment downtime\n- Non-invasive sensor attachment\n- Full SOC2 Type II compliance`
+      },
+      whitepaper: {
+        id: "asset-808",
+        title: "Whitepaper: Sub-Millisecond Anomaly Detection on SCADA Networks",
+        status: "pending",
+        content: `### Executive Briefing\nThis technical whitepaper outlines the architecture behind Everline's sub-millisecond edge ML inference engines, demonstrating how vibration and thermal telemetry are analyzed locally without transmitting unencrypted raw data over public WAN links.`
+      },
+      newsletter: {
+        id: "asset-809",
+        title: "Newsletter Issue #14: Industry 4.0 Reliability Report",
+        status: "pending",
+        content: `### In This Issue:\n1. The $22,000/minute cost of SCADA delays\n2. 5 steps to upgrade legacy Allen-Bradley control cabinets\n3. Q3 Smart Manufacturing Procurement Benchmarks`
+      },
+      caseStudy: {
+        id: "asset-810",
+        title: "Case Study: Apex Manufacturing Cuts Plant Downtime by 34%",
+        status: "pending",
+        content: `### Challenge\nApex operated 14 assembly lines across two automotive plants, suffering 12+ hours of monthly unplanned bearing failure.\n\n### Solution\nEverline deployed 48 edge sensors across critical PLCs within 36 hours.\n\n### Result\n$1.2M in annual downtime savings and zero catastrophic bearing breakdowns over 180 days.`
+      },
       creativeAssets: [
-        { id: "asset-806", title: "Edge Telemetry Architecture Diagram", type: "Architecture Diagram", dimensions: "1920x1080 SVG", status: "pending" }
+        { id: "asset-c1", title: "Edge Telemetry Architecture Flow Diagram", type: "Architecture Diagram", dimensions: "1920x1080 SVG", status: "pending" },
+        { id: "asset-c2", title: "Smart Factory Vibration Anomaly Breakdown", type: "Infographic", dimensions: "1200x2400 PNG", status: "pending" },
+        { id: "asset-c3", title: "Predictive Maintenance Product Demo Spec", type: "Video Spec", dimensions: "4K MP4 (60s)", status: "pending" },
+        { id: "asset-c4", title: "SCADA PLC Connector Banner Ad Creative", type: "Marketing Creative", dimensions: "1200x630 PNG", status: "pending" }
       ]
     }
   },
