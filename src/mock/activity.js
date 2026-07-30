@@ -29,6 +29,6 @@ export const initialNotifications = [
 export const systemActivityFeed = [
   { time: "10:45 AM", text: "RUN-2481 Manufacturing pipeline reached Step 7 (Content Planning)." },
   { time: "09:30 AM", text: "Website audit completed for acmecloud.io with Health Score 68." },
-  { time: "Yesterday", text: "LinkedIn asset-902 approved for RUN-2480 Multi-Cloud campaign." },
+  { time: "Yesterday", text: "LinkedIn asset-902 approved for RUN-2480 Multi-Cloud marketing run." },
   { time: "2 days ago", text: "New website audit initiated for finverse-pay.com." }
 ];

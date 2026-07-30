@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Search, Bell, Check, Sparkles, ExternalLink } from "lucide-react";
+import { Search, Bell, Check, Sparkles, ExternalLink, Moon, Sun } from "lucide-react";
 import { Breadcrumb } from "../ui/Breadcrumb";
 import { Avatar } from "../ui/Avatar";
 import { useAppStore } from "../../store/AppStore";
@@ -10,6 +10,14 @@ export function Header() {
   const location = useLocation();
   const { notifications, markNotificationRead, user } = useAppStore();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== "undefined") {
+      const storedTheme = window.localStorage.getItem("brandsutra-theme");
+      if (storedTheme) return storedTheme;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    return "light";
+  });
   const notifRef = useRef(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -24,15 +32,24 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    window.localStorage.setItem("brandsutra-theme", theme);
+  }, [theme]);
+
   // Build breadcrumb based on route under /app
   const getBreadcrumbs = () => {
     const path = location.pathname;
     if (path === "/app") return [{ label: "Dashboard" }];
-    if (path === "/app/marketing") return [{ label: "Campaign Runs" }];
-    if (path === "/app/marketing/new")
-      return [{ label: "Campaign Runs", to: "/app/marketing" }, { label: "New Campaign Run" }];
+    if (path === "/app/marketing") return [{ label: "Marketing Dashboard" }];
+    if (path === "/app/marketing/automated" || path === "/app/marketing/new")
+      return [{ label: "Automated Market Monitoring" }];
+    if (path === "/app/marketing/manual")
+      return [{ label: "Manual Topic Research" }];
+    if (path === "/app/marketing/content")
+      return [{ label: "Content Planning" }];
     if (path.startsWith("/app/marketing/runs/"))
-      return [{ label: "Campaign Runs", to: "/app/marketing" }, { label: "Run Detail" }];
+      return [{ label: "Marketing Runs", to: "/app/marketing" }, { label: "Run Detail" }];
     if (path === "/app/website") return [{ label: "Site Analyses" }];
     if (path === "/app/website/new")
       return [{ label: "Site Analyses", to: "/app/website" }, { label: "New Analysis" }];
@@ -54,13 +71,22 @@ export function Header() {
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-subtle" />
           <input
             type="text"
-            placeholder="Search campaigns, audits, assets..."
+            placeholder="Search Marketing tools, audits..."
             className="w-64 h-8 pl-8 pr-12 text-xs bg-raise border border-border rounded-control text-ink placeholder:text-ink-subtle focus-visible:outline-none focus-visible:border-accent focus-visible:bg-surface transition-colors"
           />
           <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-ink-subtle bg-surface border border-border px-1 py-0.5 rounded">
             ⌘K
           </kbd>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="p-2 rounded-control text-ink-muted hover:text-ink hover:bg-raise transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          aria-label="Toggle dark mode"
+        >
+          {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
 
         {/* Notifications Bell */}
         <div className="relative" ref={notifRef}>

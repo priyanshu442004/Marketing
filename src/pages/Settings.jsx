@@ -43,7 +43,7 @@ export function Settings() {
 
   // Connectors state
   const [connectors, setConnectors] = useState([
-    { id: "linkedin", name: "LinkedIn Organization Page", connected: true, account: "Everline Marketing Corp" },
+    { id: "linkedin", name: "LinkedIn Organization Page", connected: true, account: "BrandSutra Marketing Corp" },
     { id: "gsc", name: "Google Search Console", connected: true, account: "acmecloud.io" },
     { id: "hubspot", name: "HubSpot CRM & CMS", connected: false, account: "Not Connected" },
     { id: "wordpress", name: "WordPress Publishing Engine", connected: false, account: "Not Connected" }
@@ -238,7 +238,7 @@ export function Settings() {
                 <Badge variant="accent">Enterprise</Badge>
               </div>
               <p className="text-xs text-ink-muted">
-                Includes unlimited 10-agent campaign runs, website structure crawls, and human approval queue workflows.
+                Includes unlimited 10-agent marketing runs, website structure crawls, and human approval queue workflows.
               </p>
             </Card>
 

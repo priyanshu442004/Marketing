@@ -25,7 +25,7 @@ export function ContactPage() {
       <div className="max-w-3xl space-y-4">
         <Badge variant="accent">Contact Us</Badge>
         <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">
-          Get in Touch with the Everline Team
+          Get in Touch with the BrandSutra Team
         </h1>
         <p className="text-sm text-ink-muted leading-relaxed">
           Have questions about our multi-agent architecture or need a custom enterprise SLA? Reach out directly.
@@ -43,7 +43,7 @@ export function ContactPage() {
                 <CheckCircle2 className="w-8 h-8 text-accent" />
                 <h3 className="text-base font-bold text-ink">Message Received</h3>
                 <p className="text-xs text-ink-muted leading-relaxed">
-                  Thank you for reaching out, {formData.name}. A solution architect from Everline will review your inquiry and respond to {formData.email} within 2 hours.
+                  Thank you for reaching out, {formData.name}. A solution architect from BrandSutra will review your inquiry and respond to {formData.email} within 2 hours.
                 </p>
                 <Button variant="secondary" size="sm" onClick={() => { setSubmitted(false); setFormData({ name: "", email: "", company: "", message: "" }); }}>
                   Send Another Message
@@ -91,7 +91,7 @@ export function ContactPage() {
                   <textarea
                     rows={4}
                     required
-                    placeholder="Describe your multi-agent campaign or website audit requirements..."
+                    placeholder="Describe your multi-agent marketing workflow or website audit requirements..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="w-full p-3 bg-raise border border-border rounded-control text-ink focus:outline-none focus:border-accent font-sans"
@@ -123,7 +123,7 @@ export function ContactPage() {
                 <Mail className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-ink">Direct Support</p>
-                  <p className="font-mono">support@everline.ai</p>
+                  <p className="font-mono">support@BrandSutra.ai</p>
                 </div>
               </div>
 

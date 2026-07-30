@@ -26,7 +26,7 @@ export function SecurityPage() {
           Security, Compliance, and Data Protection Standards
         </h1>
         <p className="text-sm text-ink-muted leading-relaxed">
-          How Everline safeguards enterprise data across multi-agent pipelines and website intelligence telemetry.
+          How BrandSutra safeguards enterprise data across multi-agent pipelines and website intelligence telemetry.
         </p>
       </div>
 
@@ -48,7 +48,7 @@ export function SecurityPage() {
         <div className="p-6 bg-raise border border-border rounded-card space-y-3">
           <h2 className="text-base font-bold text-ink">1. Infrastructure & Access Control</h2>
           <p className="text-xs text-ink-muted leading-relaxed">
-            Everline operates on isolated tenant architectures. Multi-factor authentication (MFA) and Single Sign-On (SSO / SAML 2.0) are enforced across all corporate accounts. Access permissions follow strict Principle of Least Privilege (PoLP).
+            BrandSutra operates on isolated tenant architectures. Multi-factor authentication (MFA) and Single Sign-On (SSO / SAML 2.0) are enforced across all corporate accounts. Access permissions follow strict Principle of Least Privilege (PoLP).
           </p>
         </div>
 

@@ -1,8 +1,8 @@
 {
-  "name": "everline-frontend",
+  "name": "BrandSutra-frontend",
   "private": true,
   "version": "1.0.0",
-  "description": "Everline AI Marketing & Website Intelligence Platform — High-Fidelity Interactive Frontend Prototype",
+  "description": "BrandSutra AI Marketing & Website Intelligence Platform — High-Fidelity Interactive Frontend Prototype",
   "type": "module",
   "scripts": {
     "dev": "vite",

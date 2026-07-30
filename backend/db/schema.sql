@@ -1,0 +1,2 @@
+-- Database schema placeholder
+-- Do not generate SQL schema yet

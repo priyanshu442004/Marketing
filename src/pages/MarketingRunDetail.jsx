@@ -72,6 +72,12 @@ export function MarketingRunDetail() {
   }
 
   const pendingCount = allAssets.filter((a) => a.status === "pending").length;
+  const workflowStages = ["Research", "AI Agents", "Content Generated", "Human Approval", "Completed"];
+  const activeStageIndex = activeTab === "approvals"
+    ? 3
+    : pendingCount === 0 && run.status !== "running"
+      ? 4
+      : 2;
 
   const filteredApprovalAssets = allAssets.filter((asset) => {
     if (approvalFilter === "all") return true;
@@ -198,7 +204,7 @@ export function MarketingRunDetail() {
               icon={CheckSquare}
               onClick={() => setActiveTab("approvals")}
             >
-              Approvals ({pendingCount} pending)
+              Human Approval ({pendingCount} pending)
             </Button>
             <Button
               variant="primary"
@@ -240,6 +246,32 @@ export function MarketingRunDetail() {
         )}
       </div>
 
+      <div className="flex flex-wrap items-center gap-2 rounded-card border border-border bg-surface p-3">
+        {workflowStages.map((stage, index) => {
+          const isActive = index === activeStageIndex;
+          const isCompleted = index < activeStageIndex;
+
+          return (
+            <div key={stage} className="flex items-center gap-2">
+              <div
+                className={`px-3 py-1.5 rounded-full border text-[11px] font-semibold uppercase tracking-wider ${
+                  isActive
+                    ? "border-accent bg-accent-tint text-accent"
+                    : isCompleted
+                      ? "border-border bg-raise text-ink"
+                      : "border-border bg-surface text-ink-subtle"
+                }`}
+              >
+                {stage}
+              </div>
+              {index < workflowStages.length - 1 && (
+                <span className="text-ink-subtle text-xs">→</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
       {/* Main Tabs */}
       <Tabs defaultValue="pipeline" value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
@@ -247,7 +279,7 @@ export function MarketingRunDetail() {
             Agent Pipeline Rail
           </TabsTrigger>
           <TabsTrigger value="approvals" icon={CheckSquare} badge={pendingCount}>
-            Human Approvals Queue
+            Human Approval
           </TabsTrigger>
           <TabsTrigger value="deliverables" icon={FileText} badge={deliverablesList.length}>
             Deliverables & Export
@@ -340,9 +372,9 @@ export function MarketingRunDetail() {
           <div className="space-y-6">
             <div className="bg-surface p-4 rounded-card border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-sm font-semibold text-ink">Human Approval Queue</h3>
+                <h3 className="text-sm font-semibold text-ink">Human Approval</h3>
                 <p className="text-xs text-ink-muted">
-                  Review generated copy and visual assets prior to campaign publishing.
+                  Review generated copy and visual assets before final delivery.
                 </p>
               </div>
 
@@ -363,10 +395,10 @@ export function MarketingRunDetail() {
               </div>
             </div>
 
-            {/* Note on automated publishing */}
+            {/* Note on approval flow */}
             <div className="p-3 rounded bg-raise border border-border text-xs text-ink-muted flex items-center gap-2 font-mono">
               <ShieldCheck className="w-4 h-4 text-accent shrink-0" />
-              <span>Automated social & email channel publishing coming in a future release.</span>
+              <span>Approval is the final step before completion.</span>
             </div>
 
             {/* Aggregated Assets List */}
@@ -384,8 +416,15 @@ export function MarketingRunDetail() {
                       <StatusChip status={asset.status} />
                     </div>
 
-                    <div className="text-xs text-ink bg-raise/50 p-3 rounded font-sans leading-relaxed whitespace-pre-line">
-                      {asset.content || asset.body || `[Creative Asset: ${asset.dimensions}]`}
+                    <div className="flex items-center gap-3">
+                      <img
+                        src="/approval-placeholder.svg"
+                        alt="Approval preview"
+                        className="w-24 h-16 rounded border border-border object-cover"
+                      />
+                      <div className="text-xs text-ink bg-raise/50 p-3 rounded font-sans leading-relaxed whitespace-pre-line flex-1">
+                        {asset.content || asset.body || `[Creative Asset: ${asset.dimensions}]`}
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-end gap-2 pt-1">

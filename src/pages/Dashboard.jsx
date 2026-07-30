@@ -57,7 +57,7 @@ export function Dashboard() {
   const activityFeed = [
     { time: "10:45 AM", text: "RUN-2481 Manufacturing pipeline reached Step 7 (Content Planning)." },
     { time: "09:30 AM", text: "Website audit completed for acmecloud.io with Health Score 68." },
-    { time: "Yesterday", text: "LinkedIn asset-902 approved for RUN-2480 Multi-Cloud campaign." },
+    { time: "Yesterday", text: "LinkedIn asset-902 approved for RUN-2480 Multi-Cloud marketing run." },
     { time: "2 days ago", text: "New website audit initiated for finverse-pay.com." }
   ];
 
@@ -70,7 +70,7 @@ export function Dashboard() {
             Control Center Overview
           </span>
           <h1 className="text-2xl font-bold text-ink tracking-tight">
-            Everline Command Dashboard
+            BrandSutra CMO Dashboard
           </h1>
           <p className="text-xs text-ink-muted mt-0.5">
             Real-time status across marketing agent runs, pending asset approvals, and website health audits.
@@ -82,7 +82,7 @@ export function Dashboard() {
             Analyze Website
           </Button>
           <Button variant="primary" icon={PlusCircle} onClick={() => navigate("/app/marketing/new")}>
-            New Campaign Run
+            Run
           </Button>
         </div>
       </div>
@@ -118,7 +118,18 @@ export function Dashboard() {
         </div>
 
         <div>
-          <span className="text-[11px] font-mono uppercase text-ink-subtle block">Avg Website Health</span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[11px] font-mono uppercase text-ink-subtle block">Avg Website Health</span>
+            <a
+              href="https://allabovedesignstudio.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[10px] font-mono text-accent hover:underline flex items-center gap-1"
+            >
+              Visit
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
           <div className="flex items-baseline gap-2 mt-1">
             <span className="text-2xl font-bold font-mono text-ink">{avgHealthScore}/100</span>
             <span className="text-[10px] font-mono text-ink-subtle">Target &gt;80</span>
@@ -143,9 +154,9 @@ export function Dashboard() {
             Execute 10 autonomous agents across RSS trend scraping, audience research, competitive benchmarking, SEO intent mapping, and multi-channel asset generation.
           </p>
           <div className="pt-2 border-t border-border flex items-center justify-between">
-            <span className="text-xs font-mono text-ink-subtle">{runs.length} total campaign runs</span>
+            <span className="text-xs font-mono text-ink-subtle">{runs.length} total marketing runs</span>
             <Button size="sm" variant="primary" icon={ArrowRight} onClick={() => navigate("/app/marketing")}>
-              Launch Module 1
+              Launch
             </Button>
           </div>
         </div>
@@ -167,7 +178,7 @@ export function Dashboard() {
           <div className="pt-2 border-t border-border flex items-center justify-between">
             <span className="text-xs font-mono text-ink-subtle">{analyses.length} website audits</span>
             <Button size="sm" variant="secondary" icon={ArrowRight} onClick={() => navigate("/app/website")}>
-              Launch Module 2
+              Launch
             </Button>
           </div>
         </div>
@@ -212,19 +223,47 @@ export function Dashboard() {
         </div>
 
         {/* Activity Feed (5 cols) */}
-        <div className="lg:col-span-5 bg-surface p-5 rounded-card border border-border space-y-3">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
-            <Clock className="w-4 h-4 text-ink-subtle shrink-0" />
-            <h3 className="text-sm font-semibold text-ink">System Activity Stream</h3>
+        <div className="lg:col-span-5 space-y-4">
+          <div className="bg-surface p-5 rounded-card border border-border space-y-3">
+            <div className="flex items-center gap-2 border-b border-border pb-2">
+              <Sparkles className="w-4 h-4 text-accent shrink-0" />
+              <h3 className="text-sm font-semibold text-ink">Content Planning</h3>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="rounded bg-raise p-3">
+                <div className="text-[10px] font-mono uppercase text-ink-subtle">Approved</div>
+                <div className="text-base font-semibold text-ink mt-1">12</div>
+              </div>
+              <div className="rounded bg-raise p-3">
+                <div className="text-[10px] font-mono uppercase text-ink-subtle">Scheduled</div>
+                <div className="text-base font-semibold text-ink mt-1">6</div>
+              </div>
+              <div className="rounded bg-raise p-3">
+                <div className="text-[10px] font-mono uppercase text-ink-subtle">Draft</div>
+                <div className="text-base font-semibold text-ink mt-1">4</div>
+              </div>
+              <div className="rounded bg-raise p-3">
+                <div className="text-[10px] font-mono uppercase text-ink-subtle">Pending Review</div>
+                <div className="text-base font-semibold text-ink mt-1">3</div>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-2 font-mono text-xs">
-            {activityFeed.map((item, idx) => (
-              <div key={idx} className="flex gap-2 text-ink-muted border-b border-border/50 pb-2 last:border-none">
-                <span className="text-[10px] text-ink-subtle shrink-0 pt-0.5">{item.time}</span>
-                <span className="text-[11px] leading-snug">{item.text}</span>
-              </div>
-            ))}
+          <div className="bg-surface p-5 rounded-card border border-border space-y-3">
+            <div className="flex items-center gap-2 border-b border-border pb-2">
+              <Clock className="w-4 h-4 text-ink-subtle shrink-0" />
+              <h3 className="text-sm font-semibold text-ink">System Activity Stream</h3>
+            </div>
+
+            <div className="space-y-2 font-mono text-xs">
+              {activityFeed.map((item, idx) => (
+                <div key={idx} className="flex gap-2 text-ink-muted border-b border-border/50 pb-2 last:border-none">
+                  <span className="text-[10px] text-ink-subtle shrink-0 pt-0.5">{item.time}</span>
+                  <span className="text-[11px] leading-snug">{item.text}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

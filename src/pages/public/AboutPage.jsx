@@ -27,18 +27,18 @@ export function AboutPage() {
           Building the Autonomous Telemetry Engine for Enterprise SaaS Growth
         </h1>
         <p className="text-sm text-ink-muted leading-relaxed">
-          Everline was founded to eliminate the disconnect between complex engineering products and high-converting marketing campaigns.
+          BrandSutra was founded to eliminate the disconnect between complex engineering products and high-converting marketing programs.
         </p>
       </div>
 
       {/* Origin Story */}
       <div className="p-8 bg-surface rounded-card border border-border space-y-4 max-w-4xl">
-        <h2 className="text-xl font-bold text-ink tracking-tight">The Origin of Everline</h2>
+        <h2 className="text-xl font-bold text-ink tracking-tight">The Origin of BrandSutra</h2>
         <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
           In 2025, our founders observed that B2B SaaS teams were spending 80% of their time translating technical engineering specs into marketing collateral. Traditional marketing agencies lacked technical depth, while internal engineering teams lacked time to write blog posts and whitepapers.
         </p>
         <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
-          We built Everline to bridge this gap: an autonomous 10-agent pipeline that ingests continuous market signals, performs competitive gap analysis, and drafts engineering-grade content for human review.
+          We built BrandSutra to bridge this gap: an Autonomous Agentic AI pipeline that ingests continuous market signals, performs competitive gap analysis, and drafts engineering-grade content for human review.
         </p>
       </div>
 
@@ -63,7 +63,7 @@ export function AboutPage() {
       <div className="space-y-6">
         <div className="space-y-1">
           <h2 className="text-2xl font-bold text-ink tracking-tight">Leadership Team</h2>
-          <p className="text-xs text-ink-muted">Engineers and product leaders building Everline.</p>
+          <p className="text-xs text-ink-muted">Engineers and product leaders building BrandSutra.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">

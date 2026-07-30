@@ -41,7 +41,7 @@ export function DemoPage() {
       <div className="max-w-3xl space-y-4">
         <Badge variant="accent font-mono">1:1 Live Walkthrough</Badge>
         <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">
-          Book a Personal Demo of the Everline Platform
+          Book a Personal Demo of the BrandSutra Platform
         </h1>
         <p className="text-sm text-ink-muted leading-relaxed">
           See how our 10-agent AI Marketing pipeline and 5-area Website Intelligence audit run in real-time on your domain.

@@ -8,8 +8,8 @@ import { Shield, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("alex.vance@everline.ai");
-  const [password, setPassword] = useState("••••••••••••");
+  const [email, setEmail] = useState("admin@brandsutra.com");
+  const [password, setPassword] = useState("admin@123");
   const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
@@ -35,7 +35,7 @@ export function LoginPage() {
           </Link>
 
           <div className="mt-12 space-y-2">
-            <h1 className="text-2xl font-bold text-ink tracking-tight">Sign in to Everline</h1>
+            <h1 className="text-2xl font-bold text-ink tracking-tight">Sign in to BrandSutra</h1>
             <p className="text-xs text-ink-muted">
               Enter your credentials to access your autonomous agent workspace.
             </p>
@@ -108,7 +108,7 @@ export function LoginPage() {
             Orchestrate 10 specialized AI agents across market research, strategy, and content generation.
           </h2>
           <p className="text-xs text-surface/75 leading-relaxed">
-            Everline turns raw industry signals into publish-ready multi-channel campaign deliverables with enterprise approval controls.
+            BrandSutra turns raw industry signals into publish-ready multi-channel marketing deliverables with enterprise approval controls.
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export function LoginPage() {
           </div>
           <div className="space-y-1">
             <p className="text-surface font-sans font-semibold text-xs">
-              Autonomous Smart Factory IoT Campaign
+              Autonomous Smart Factory IoT Marketing Run
             </p>
             <p className="text-surface/60 text-[11px]">
               Outputs: 18 assets • 4 pending approval
@@ -134,7 +134,7 @@ export function LoginPage() {
 
 export function SignupPage() {
   const navigate = useNavigate();
-  const [password, setPassword] = useState("••••••••••••");
+  const [password, setPassword] = useState("admin@123");
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col md:flex-row font-sans text-left">
@@ -155,9 +155,9 @@ export function SignupPage() {
           </div>
 
           <form onSubmit={(e) => { e.preventDefault(); navigate("/app"); }} className="mt-8 space-y-4 max-w-sm">
-            <Input label="Full Name" defaultValue="Alex Vance" />
-            <Input label="Work Email" type="email" defaultValue="alex.vance@everline.ai" />
-            <Input label="Company Name" defaultValue="Everline Marketing Inc." />
+            <Input label="Full Name" defaultValue="Saurabh Dey" />
+            <Input label="Work Email" type="email" defaultValue="admin@brandsutra.com" />
+            <Input label="Company Name" defaultValue="All Above Design Studio" />
             
             <div className="space-y-1">
               <label className="text-xs font-semibold text-ink">Password</label>
@@ -210,7 +210,7 @@ export function SignupPage() {
             Enterprise SaaS Platform
           </span>
           <h2 className="text-2xl font-bold tracking-tight">
-            Comprehensive Website & Campaign Intelligence
+            Comprehensive Website & Marketing Intelligence
           </h2>
           <p className="text-xs text-surface/75 leading-relaxed">
             Full 10-agent multi-channel research, strategy, copywriting, and 5-area domain structure audit.

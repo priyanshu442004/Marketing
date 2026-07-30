@@ -108,7 +108,7 @@ export function MarketingRunsList() {
           icon={PlusCircle}
           onClick={() => navigate("/app/marketing/new")}
         >
-          New Campaign Run
+          Research
         </Button>
       </div>
 
@@ -271,7 +271,7 @@ export function MarketingRunsList() {
         <EmptyState
           icon={Filter}
           title="No runs match these filters"
-          description="Try selecting a different industry, status, or search query to view campaign runs."
+          description="Try selecting a different industry, status, or search query to view marketing runs."
           actionLabel="Clear filters"
           onAction={clearFilters}
         />

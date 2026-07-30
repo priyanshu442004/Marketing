@@ -133,7 +133,7 @@ export function BlogPage() {
               </div>
               <div>
                 <h4 className="text-xs font-bold text-ink">{post.author}</h4>
-                <p className="text-[11px] font-mono text-ink-subtle">{post.authorRole} • Everline Research</p>
+                <p className="text-[11px] font-mono text-ink-subtle">{post.authorRole} • BrandSutra Research</p>
               </div>
             </div>
           </article>

@@ -2,13 +2,12 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
-  Megaphone,
   PlusCircle,
-  Globe,
   Settings as SettingsIcon,
   Sparkles,
-  BarChart3,
-  Layers,
+  SearchIcon,
+  TrendingUp,
+  SearchCode,
 } from "lucide-react";
 import { BRAND } from "../../config";
 import { useAppStore } from "../../store/AppStore";
@@ -28,14 +27,15 @@ export function Sidebar() {
     {
       title: "AI Marketing Agent",
       items: [
-        { label: "Campaign Runs", to: "/app/marketing", icon: Megaphone },
-        { label: "New Campaign Run", to: "/app/marketing/new", icon: PlusCircle },
+        { label: "Automated Market Monitoring", to: "/app/marketing/automated", icon: SearchCode },
+        { label: "Manual Topic Research", to: "/app/marketing/manual", icon: SearchIcon },
+        { label: "Content Planning", to: "/app/marketing/content", icon: Sparkles },
       ],
     },
     {
       title: "Website Intelligence",
       items: [
-        { label: "Site Analyses", to: "/app/website", icon: Globe },
+        { label: "Site Analyses", to: "/app/website", icon: TrendingUp },
         { label: "New Analysis", to: "/app/website/new", icon: PlusCircle },
       ],
     },
@@ -67,10 +67,7 @@ export function Sidebar() {
                 </div>
               )}
               {group.items.map((item) => {
-                const isActive = item.exact
-                  ? location.pathname === item.to
-                  : location.pathname.startsWith(item.to) &&
-                    (item.to !== "/app" || location.pathname === "/app");
+                const isActive = location.pathname === item.to;
 
                 const Icon = item.icon;
 

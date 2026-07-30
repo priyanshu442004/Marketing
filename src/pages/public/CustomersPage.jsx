@@ -12,12 +12,12 @@ const customerStories = [
     company: "Cognitive SCADA Systems",
     industry: "Industrial IoT & Manufacturing",
     monogram: "C",
-    metric: "72% Faster Campaign Launch",
-    summary: "How Cognitive SCADA replaced manual agency copywriters with Everline's 10-agent pipeline to scale content output across 4 verticals.",
-    challenge: "Cognitive SCADA developed edge AI telemetry hardware for automotive plants, but their internal marketing team struggled to translate complex SCADA technical specs into engaging B2B campaign copy. Agencies required 3+ weeks per whitepaper.",
-    approach: "Deployed Everline's Module 1 (AI Marketing Agent) configured with automated RSS monitoring across industrial trade journals and competitor search clusters. Triggered 10-agent runs for weekly product briefs.",
+    metric: "72% Faster Marketing Launch",
+    summary: "How Cognitive SCADA replaced manual agency copywriters with BrandSutra's 10-agent pipeline to scale content output across 4 verticals.",
+    challenge: "Cognitive SCADA developed edge AI telemetry hardware for automotive plants, but their internal marketing team struggled to translate complex SCADA technical specs into engaging B2B marketing copy. Agencies required 3+ weeks per whitepaper.",
+    approach: "Deployed BrandSutra's Module 1 (AI Marketing Agent) configured with automated RSS monitoring across industrial trade journals and competitor search clusters. Triggered 10-agent runs for weekly product briefs.",
     outcome: "Reduced content turnaround time from 21 days to under 48 hours. Produced 18 approved multi-format assets per month while maintaining 100% engineering review approval.",
-    quote: "Everline is the first platform that speaks our engineering domain language. The context merger agent synthesizes complex technical topics flawlessly.",
+    quote: "BrandSutra is the first platform that speaks our engineering domain language. The context merger agent synthesizes complex technical topics flawlessly.",
     author: "Marcus Vance, VP of Growth"
   },
   {
@@ -28,7 +28,7 @@ const customerStories = [
     metric: "14 Portals Audited in 1 Day",
     summary: "Vertex BioPharma used Website Intelligence to identify critical HIPAA messaging gaps and conversion friction across 14 international product landing pages.",
     challenge: "Managing 14 distinct sub-domains across regional markets led to messaging drift and unaligned lead generation forms. Manual site audits took months.",
-    approach: "Ran Everline's Module 2 (Website Intelligence) across all 14 domains, receiving individual 0–100 Health Scores and category scorecards for Business Alignment, SEO, and Conversion Readiness.",
+    approach: "Ran BrandSutra's Module 2 (Website Intelligence) across all 14 domains, receiving individual 0–100 Health Scores and category scorecards for Business Alignment, SEO, and Conversion Readiness.",
     outcome: "Discovered high-severity conversion friction on 6 key demo request forms. Executed Phase 1 Now roadmap items to increase organic demo conversions by 28%.",
     quote: "The 5-area gap analysis gave our product managers an immediate prioritized roadmap. No more guessing what to fix first.",
     author: "Elena Rostova, Head of Digital Marketing"
@@ -39,9 +39,9 @@ const customerStories = [
     industry: "Enterprise SaaS & Robotic Process",
     monogram: "A",
     metric: "3.4x Higher Demo Conversion",
-    summary: "Apex Automation combined Module 1 campaign execution with Module 2 website gap audits to align search intent with landing page copy.",
-    challenge: "Apex ran paid search campaigns for RPA keywords, but landing page bounce rates exceeded 65% due to generic value propositions.",
-    approach: "Utilized Everline's SEO Agent SERP telemetry to rewrite landing page headers and deployed Module 2 to align CTA placement.",
+    summary: "Apex Automation combined Module 1 marketing execution with Module 2 website gap audits to align search intent with landing page copy.",
+    challenge: "Apex ran paid search programs for RPA keywords, but landing page bounce rates exceeded 65% due to generic value propositions.",
+    approach: "Utilized BrandSutra's SEO Agent SERP telemetry to rewrite landing page headers and deployed Module 2 to align CTA placement.",
     outcome: "Bounce rates dropped by 42% within two weeks. Organic search traffic grew 185% over 90 days across high-intent transactional query clusters.",
     quote: "Connecting market search telemetry directly to website gap analysis is a game-changer for B2B growth.",
     author: "David Chen, Chief Marketing Officer"
@@ -87,7 +87,7 @@ export function CustomersPage() {
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-sm font-bold uppercase font-mono tracking-wider text-ink-subtle">The Everline Approach</h2>
+            <h2 className="text-sm font-bold uppercase font-mono tracking-wider text-ink-subtle">The BrandSutra Approach</h2>
             <p className="p-4 bg-surface rounded border border-border">{story.approach}</p>
           </div>
 
@@ -128,7 +128,7 @@ export function CustomersPage() {
       <div className="max-w-3xl space-y-4">
         <Badge variant="accent">Customer Success</Badge>
         <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">
-          How Enterprise Teams Scale Growth with Everline
+          How Enterprise Teams Scale Growth with BrandSutra
         </h1>
         <p className="text-sm text-ink-muted leading-relaxed">
           Read real case studies from B2B SaaS engineering and marketing leaders.

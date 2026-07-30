@@ -3,7 +3,7 @@ import { MARKETING_AGENTS_DEFINITION } from "./agents";
 export const initialRuns = [
   {
     id: "RUN-2481",
-    title: "Autonomous Manufacturing & Smart Factory IoT Campaign",
+    title: "Autonomous Manufacturing & Smart Factory IoT Marketing Run",
     topic: "Agentic AI & Predictive Maintenance in Smart Factories",
     source: "Automated",
     industry: "Manufacturing",
@@ -69,12 +69,12 @@ export const initialRuns = [
           { name: "Meridian Labs", positioning: "Cloud-only predictive maintenance", strengths: "Modern SaaS UI", cadence: "Bi-weekly webinars", seoFocus: "Cloud IoT" }
         ],
         gaps: ["No competitor offers offline-first edge AI inference with automatic SCADA synchronization."],
-        angles: [{ title: "The Offline-First Edge Advantage", desc: "Position Everline as the only operational AI platform that functions continuously during network disruptions." }]
+        angles: [{ title: "The Offline-First Edge Advantage", desc: "Position BrandSutra as the only operational AI platform that functions continuously during network disruptions." }]
       },
       contextMerger: {
         title: "Master Marketing Context Brief: Smart Factory Reliability 2026",
         takeaways: ["Focus core narrative on zero-downtime setup and offline-first edge capabilities."],
-        thesis: "Everline bridges the Industry 4.0 gap by delivering zero-friction edge AI telemetry that connects directly to legacy hardware."
+        thesis: "BrandSutra bridges the Industry 4.0 gap by delivering zero-friction edge AI telemetry that connects directly to legacy hardware."
       },
       contentStrategy: {
         types: ["Blog Post", "LinkedIn Executive Brief", "Technical Whitepaper", "Email Nurture Sequence"],
@@ -89,13 +89,13 @@ export const initialRuns = [
       seo: {
         keywords: [{ keyword: "predictive maintenance software", intent: "Transactional", volume: "18,400", difficulty: "48/100" }],
         serpPreview: {
-          title: "Predictive Maintenance AI for Smart Manufacturing | Everline",
-          url: "https://everline.ai/solutions/manufacturing-predictive-maintenance",
-          description: "Eliminate unplanned factory downtime with Everline's offline-first edge AI. Connect legacy PLCs in under 48 hours."
+          title: "Predictive Maintenance AI for Smart Manufacturing | BrandSutra",
+          url: "https://BrandSutra.ai/solutions/manufacturing-predictive-maintenance",
+          description: "Eliminate unplanned factory downtime with BrandSutra's offline-first edge AI. Connect legacy PLCs in under 48 hours."
         },
         searchIntentSummary: "High commercial intent buyers searching for hardware-agnostic telemetry integrations.",
         internalLinks: [{ from: "/blog/cloud-only-maintenance-fails", to: "/solutions/edge-ai-telemetry" }],
-        faqs: ["Does Everline require replacing our existing Siemens or Allen-Bradley PLCs?"]
+        faqs: ["Does BrandSutra require replacing our existing Siemens or Allen-Bradley PLCs?"]
       }
     },
     outputs: {
@@ -137,7 +137,7 @@ export const initialRuns = [
         id: "asset-808",
         title: "Whitepaper: Sub-Millisecond Anomaly Detection on SCADA Networks",
         status: "pending",
-        content: `### Executive Briefing\nThis technical whitepaper outlines the architecture behind Everline's sub-millisecond edge ML inference engines, demonstrating how vibration and thermal telemetry are analyzed locally without transmitting unencrypted raw data over public WAN links.`
+        content: `### Executive Briefing\nThis technical whitepaper outlines the architecture behind BrandSutra's sub-millisecond edge ML inference engines, demonstrating how vibration and thermal telemetry are analyzed locally without transmitting unencrypted raw data over public WAN links.`
       },
       newsletter: {
         id: "asset-809",
@@ -149,7 +149,7 @@ export const initialRuns = [
         id: "asset-810",
         title: "Case Study: Apex Manufacturing Cuts Plant Downtime by 34%",
         status: "pending",
-        content: `### Challenge\nApex operated 14 assembly lines across two automotive plants, suffering 12+ hours of monthly unplanned bearing failure.\n\n### Solution\nEverline deployed 48 edge sensors across critical PLCs within 36 hours.\n\n### Result\n$1.2M in annual downtime savings and zero catastrophic bearing breakdowns over 180 days.`
+        content: `### Challenge\nApex operated 14 assembly lines across two automotive plants, suffering 12+ hours of monthly unplanned bearing failure.\n\n### Solution\nBrandSutra deployed 48 edge sensors across critical PLCs within 36 hours.\n\n### Result\n$1.2M in annual downtime savings and zero catastrophic bearing breakdowns over 180 days.`
       },
       creativeAssets: [
         { id: "asset-c1", title: "Edge Telemetry Architecture Flow Diagram", type: "Architecture Diagram", dimensions: "1920x1080 SVG", status: "pending" },
@@ -161,7 +161,7 @@ export const initialRuns = [
   },
   {
     id: "RUN-2480",
-    title: "Enterprise Multi-Cloud Cost Optimization & Egress Campaign",
+    title: "Enterprise Multi-Cloud Cost Optimization & Egress Marketing Run",
     topic: "Multi-Cloud Egress Cost Governance & Policy-as-Code",
     source: "Manual",
     industry: "Enterprise SaaS",

@@ -18,7 +18,7 @@ export function CareersPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 text-left font-sans">
       <div className="max-w-3xl space-y-4">
-        <Badge variant="accent">Careers at Everline</Badge>
+        <Badge variant="accent">Careers at BrandSutra</Badge>
         <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">
           Join Us in Building the Future of Autonomous B2B Marketing
         </h1>

@@ -358,7 +358,7 @@ export function StrategyOutput({ data }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-border">
           <div>
-            <span className="text-[11px] font-mono uppercase text-ink-subtle">Campaign Objective</span>
+            <span className="text-[11px] font-mono uppercase text-ink-subtle">Objective</span>
             <p className="text-xs font-semibold text-ink mt-0.5">{objective}</p>
           </div>
           <div>
@@ -588,7 +588,7 @@ export function ContentGenOutput({ outputs, runId, onUpdateStatus }) {
     outputs.linkedinPosts.forEach((lp) => assetsList.push({ type: "LinkedIn Post", ...lp }));
   }
   if (outputs.emailSequence) {
-    outputs.emailSequence.forEach((em) => assetsList.push({ type: "Email Campaign", ...em }));
+    outputs.emailSequence.forEach((em) => assetsList.push({ type: "Email Content", ...em }));
   }
   if (outputs.adVariants) {
     outputs.adVariants.forEach((ad) => assetsList.push({ type: "Ad Copy Variant", ...ad }));
@@ -707,7 +707,7 @@ export function CreativeGenOutput({ outputs, runId, onUpdateStatus }) {
   const { toast } = useToast();
   const creativeList = outputs?.creativeAssets || [
     { id: "asset-c1", title: "Architecture Flow Diagram", type: "Architecture Diagram", dimensions: "1920x1080 SVG", status: "pending" },
-    { id: "asset-c2", title: "Social Campaign Header", type: "Infographic", dimensions: "1200x630 PNG", status: "pending" }
+    { id: "asset-c2", title: "Social Content Header", type: "Infographic", dimensions: "1200x630 PNG", status: "pending" }
   ];
 
   const handleAction = (assetId, action) => {

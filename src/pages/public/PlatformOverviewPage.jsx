@@ -18,7 +18,7 @@ export function PlatformOverviewPage() {
           <span className="text-xs font-mono uppercase tracking-wider text-ink-subtle">System Overview</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-ink tracking-tight">
-          Everline Multi-Agent Platform Architecture
+          BrandSutra Multi-Agent Platform Architecture
         </h1>
         <p className="text-sm text-ink-muted leading-relaxed">
           How our 10-agent AI Marketing pipeline and 3-agent Website Intelligence suite interlock to automate market discovery, competitive strategy, asset copywriting, and website audits.
@@ -114,7 +114,7 @@ export function PlatformOverviewPage() {
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-accent shrink-0" />
-                <span>8 Structured Campaign Deliverables</span>
+                <span>8 Structured Marketing Deliverables</span>
               </li>
             </ul>
           </div>

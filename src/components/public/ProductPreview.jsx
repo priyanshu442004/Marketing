@@ -3,7 +3,7 @@ import { CheckCircle2, Layers, AlertTriangle, BarChart2, Sparkles, Globe, Refres
 import { StatusChip, Badge } from "../ui/Badge";
 import { ProgressBar } from "../ui/ProgressBar";
 
-export function ProductPreviewFrame({ title = "Everline Autonomous Marketing Platform", children, className = "" }) {
+export function ProductPreviewFrame({ title = "BrandSutra Autonomous Marketing Platform", children, className = "" }) {
   return (
     <div className={`bg-surface rounded-card border border-border shadow-modal overflow-hidden text-left font-sans select-none ${className}`}>
       {/* Browser Chrome Header */}
@@ -15,7 +15,7 @@ export function ProductPreviewFrame({ title = "Everline Autonomous Marketing Pla
         </div>
         <div className="px-3 py-0.5 rounded bg-surface border border-border/80 text-[10px] font-mono text-ink-subtle flex items-center gap-1.5 max-w-[220px] truncate">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>https://app.everline.ai</span>
+          <span>https://app.BrandSutra.ai</span>
         </div>
         <div className="w-8" />
       </div>
@@ -44,7 +44,7 @@ export function InteractiveHeroPreview() {
   ];
 
   return (
-    <ProductPreviewFrame title="Everline Autonomous Platform Sandbox">
+    <ProductPreviewFrame title="BrandSutra Autonomous Platform Sandbox">
       <div className="space-y-4">
         {/* Top Interactive Tabs Bar */}
         <div className="flex items-center gap-1 border-b border-border pb-3 overflow-x-auto">
@@ -107,7 +107,7 @@ export function InteractiveHeroPreview() {
                   <StatusChip status="running" />
                 </div>
                 <h4 className="text-xs font-bold text-ink mt-0.5">
-                  Autonomous Manufacturing & Smart Factory IoT Campaign
+                  Autonomous Manufacturing & Smart Factory IoT Marketing Run
                 </h4>
               </div>
               <div className="text-right">
@@ -202,10 +202,10 @@ export function InteractiveHeroPreview() {
             <div className="p-3 bg-raise rounded border border-border space-y-1">
               <span className="text-[10px] font-mono uppercase text-ink-subtle">SERP Metadata Preview</span>
               <p className="text-xs font-semibold text-blue-700 underline">
-                Predictive Maintenance AI for Smart Manufacturing | Everline
+                Predictive Maintenance AI for Smart Manufacturing | BrandSutra
               </p>
               <p className="text-[11px] text-ink-muted leading-tight font-sans">
-                Eliminate unplanned factory downtime with Everline's offline-first edge AI. Connect legacy PLCs in under 48 hours.
+                Eliminate unplanned factory downtime with BrandSutra's offline-first edge AI. Connect legacy PLCs in under 48 hours.
               </p>
             </div>
           </div>

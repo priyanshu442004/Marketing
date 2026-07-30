@@ -1,6 +1,6 @@
-# Everline AI Marketing & Website Intelligence Platform
+# BrandSutra AI Marketing & Website Intelligence Platform
 
-**Everline** is a high-fidelity B2B SaaS frontend prototype built for client demonstrations. It features a complete interactive workflow for autonomous marketing campaign generation and website intelligence auditing.
+**BrandSutra** is a high-fidelity B2B SaaS frontend prototype built for client demonstrations. It features a complete interactive workflow for autonomous marketing campaign generation and website intelligence auditing.
 
 The application includes no real backend—all data is dynamically mocked in-memory with local state persistence (`localStorage`), offering real-time progress simulation across 10 specialized marketing agents and 3 website intelligence agents.
 

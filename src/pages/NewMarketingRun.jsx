@@ -1,30 +1,26 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/AppStore";
 import { Button } from "../components/ui/Button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/Card";
 import { Input, Select, Textarea } from "../components/ui/Input";
 import { Badge } from "../components/ui/Badge";
 import { useToast } from "../components/ui/Toast";
-import {
-  Activity,
-  Target,
-  ArrowLeft,
-  Plus,
-  Trash2,
-  Sparkles,
-  CheckCircle2,
-  Info,
-  Radio,
-  Layers,
-} from "lucide-react";
+import { Plus, Trash2, Sparkles, Info } from "lucide-react";
 
 export function NewMarketingRun() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { createRun } = useAppStore();
   const { toast } = useToast();
 
-  const [selectedMethod, setSelectedMethod] = useState(null); // 'automated' | 'manual'
+  const getActiveMode = () => {
+    if (location.pathname === "/app/marketing/manual") return "manual";
+    if (location.pathname === "/app/marketing/content") return "content";
+    return "automated";
+  };
+
+  const activeMode = getActiveMode();
+  const isManualFlow = activeMode === "manual" || activeMode === "content";
 
   // Automated form state
   const [rssFeeds, setRssFeeds] = useState([
@@ -41,12 +37,13 @@ export function NewMarketingRun() {
 
   // Manual form state
   const [topic, setTopic] = useState("Agentic AI & Autonomous SCADA Telemetry in Manufacturing");
-  const [manualIndustry, setManualIndustry] = useState("Manufacturing");
-  const [objective, setObjective] = useState("Generate Leads");
-  const [targetAudience, setTargetAudience] = useState("VP Operations, Chief Technology Officers, Plant Managers");
+  const [researchKeywordInput, setResearchKeywordInput] = useState("");
+  const [researchKeywords, setResearchKeywords] = useState(["Agentic AI", "SCADA", "Manufacturing"]);
+  const [selectedContentTypes, setSelectedContentTypes] = useState(["Blog", "LinkedIn"]);
   const [formErrors, setFormErrors] = useState({});
 
   const allCategories = ["Market News", "Competitor Launches", "Regulatory Shift", "Customer Pain Points", "Product Updates"];
+  const contentTypeOptions = ["Blog", "LinkedIn", "Newsletter", "Webinar", "Whitepaper", "Video Script", "Carousel", "Case Study"];
 
   const addFeed = () => {
     if (newFeedUrl && !rssFeeds.includes(newFeedUrl)) {
@@ -81,13 +78,34 @@ export function NewMarketingRun() {
     }
   };
 
+  const addResearchKeyword = (e) => {
+    if (e.key === "Enter" && researchKeywordInput.trim()) {
+      e.preventDefault();
+      if (!researchKeywords.includes(researchKeywordInput.trim())) {
+        setResearchKeywords([...researchKeywords, researchKeywordInput.trim()]);
+      }
+      setResearchKeywordInput("");
+    }
+  };
+
+  const removeResearchKeyword = (kw) => {
+    setResearchKeywords(researchKeywords.filter((k) => k !== kw));
+  };
+
+  const toggleContentType = (type) => {
+    if (selectedContentTypes.includes(type)) {
+      setSelectedContentTypes(selectedContentTypes.filter((t) => t !== type));
+    } else {
+      setSelectedContentTypes([...selectedContentTypes, type]);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const errors = {};
 
-    if (selectedMethod === "manual") {
-      if (!topic.trim()) errors.topic = "Topic is required for manual campaign run.";
-      if (!targetAudience.trim()) errors.targetAudience = "Target audience is required.";
+    if (isManualFlow) {
+      if (!topic.trim()) errors.topic = "Topic is required for manual research run.";
     } else {
       if (rssFeeds.length === 0) errors.rss = "At least one RSS feed is required.";
     }
@@ -97,26 +115,24 @@ export function NewMarketingRun() {
       return;
     }
 
-    const payload =
-      selectedMethod === "manual"
-        ? {
-            topic,
-            source: "Manual",
-            industry: manualIndustry,
-            objective,
-            targetAudience,
-          }
-        : {
-            topic: `Automated ${autoIndustry} Intelligence Stream`,
-            source: "Automated",
-            industry: autoIndustry,
-            objective: "Build Awareness",
-            targetAudience: "Enterprise Decision Makers",
-          };
+    const payload = isManualFlow
+      ? {
+          topic,
+          source: "Manual",
+          researchKeywords,
+          contentTypes: selectedContentTypes,
+        }
+      : {
+          topic: `Automated ${autoIndustry} Intelligence Stream`,
+          source: "Automated",
+          industry: autoIndustry,
+          objective: "Build Awareness",
+          targetAudience: "Enterprise Decision Makers",
+        };
 
     const runId = createRun(payload);
     toast({
-      title: "Campaign Run Started",
+      title: "Marketing Run Started",
       description: `Initialized 10-agent pipeline for ${runId}.`,
       variant: "success",
     });
@@ -132,119 +148,29 @@ export function NewMarketingRun() {
           Module 1 — Setup & Discovery
         </span>
         <h1 className="text-2xl font-bold text-ink tracking-tight">
-          New Marketing Campaign Run
+          {activeMode === "manual"
+            ? "Manual Topic Research"
+            : activeMode === "content"
+              ? "Content Planning"
+              : "Automated Market Monitoring"}
         </h1>
         <p className="text-xs text-ink-muted mt-1">
-          Select execution methodology to trigger autonomous market intelligence and asset creation.
+          {activeMode === "manual"
+            ? "Define a strategic topic and trigger the research workflow immediately."
+            : activeMode === "content"
+              ? "Plan editorial priorities and launch a content-focused marketing run."
+              : "Configure automated monitoring to trigger autonomous market intelligence and asset creation."}
         </p>
       </div>
 
-      {/* Step 1: Selection Cards */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
-            Step 1: Choose Execution Method
-          </h2>
-          {selectedMethod && (
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={ArrowLeft}
-              onClick={() => setSelectedMethod(null)}
-              className="text-xs"
-            >
-              Change Method
-            </Button>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Card A: Automated */}
-          <div
-            onClick={() => {
-              setSelectedMethod("automated");
-              setFormErrors({});
-            }}
-            className={`p-5 rounded-card border cursor-pointer transition-all duration-150 relative ${
-              selectedMethod === "automated"
-                ? "border-accent bg-accent-tint/40 shadow-sm"
-                : "border-border bg-surface hover:border-border-strong hover:bg-raise/50"
-            }`}
-          >
-            <div className="flex items-start gap-3.5">
-              <div
-                className={`p-2.5 rounded-control border ${
-                  selectedMethod === "automated"
-                    ? "bg-accent text-white border-accent"
-                    : "bg-raise text-ink border-border"
-                }`}
-              >
-                <Radio className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-ink">
-                  Automated Market Monitoring
-                </h3>
-                <p className="text-xs text-ink-muted leading-relaxed">
-                  Continuously scan RSS feeds, news clusters, and competitors to surface high-converting campaign opportunities automatically.
-                </p>
-              </div>
-            </div>
-            {selectedMethod === "automated" && (
-              <div className="absolute top-3 right-3 text-accent">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-            )}
-          </div>
-
-          {/* Card B: Manual */}
-          <div
-            onClick={() => {
-              setSelectedMethod("manual");
-              setFormErrors({});
-            }}
-            className={`p-5 rounded-card border cursor-pointer transition-all duration-150 relative ${
-              selectedMethod === "manual"
-                ? "border-accent bg-accent-tint/40 shadow-sm"
-                : "border-border bg-surface hover:border-border-strong hover:bg-raise/50"
-            }`}
-          >
-            <div className="flex items-start gap-3.5">
-              <div
-                className={`p-2.5 rounded-control border ${
-                  selectedMethod === "manual"
-                    ? "bg-accent text-white border-accent"
-                    : "bg-raise text-ink border-border"
-                }`}
-              >
-                <Target className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-ink">
-                  Manual Topic Research
-                </h3>
-                <p className="text-xs text-ink-muted leading-relaxed">
-                  Start from a specific strategic topic or campaign focus and trigger the full 10-agent research & copywriting workflow immediately.
-                </p>
-              </div>
-            </div>
-            {selectedMethod === "manual" && (
-              <div className="absolute top-3 right-3 text-accent">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Step 2: Form */}
-      {selectedMethod && (
+      {activeMode && (
         <form onSubmit={handleSubmit} className="space-y-6 pt-2">
           <h2 className="text-xs font-mono uppercase tracking-wider text-ink-muted border-b border-border pb-2">
-            Step 2: Configure Campaign Parameters
+            Step 2: Configure Marketing Parameters
           </h2>
 
-          {selectedMethod === "automated" ? (
+          {!isManualFlow ? (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Automated Form Left */}
               <div className="lg:col-span-2 space-y-4 bg-surface p-5 rounded-card border border-border">
@@ -411,7 +337,7 @@ export function NewMarketingRun() {
               {/* Manual Form Left */}
               <div className="lg:col-span-2 space-y-4 bg-surface p-5 rounded-card border border-border">
                 <Textarea
-                  label="Strategic Campaign Topic"
+                  label="Topic"
                   rows={3}
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
@@ -420,39 +346,60 @@ export function NewMarketingRun() {
                   helperText="Define the specific thesis, product release, or industry trend to investigate."
                 />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Select
-                    label="Industry Vertical"
-                    value={manualIndustry}
-                    onChange={(e) => setManualIndustry(e.target.value)}
-                  >
-                    <option value="Manufacturing">Manufacturing</option>
-                    <option value="Enterprise SaaS">Enterprise SaaS</option>
-                    <option value="Healthcare IT">Healthcare IT</option>
-                    <option value="FinTech">FinTech</option>
-                    <option value="E-Commerce">E-Commerce</option>
-                    <option value="Cybersecurity">Cybersecurity</option>
-                  </Select>
-
-                  <Select
-                    label="Primary Business Objective"
-                    value={objective}
-                    onChange={(e) => setObjective(e.target.value)}
-                  >
-                    <option value="Generate Leads">Generate Leads</option>
-                    <option value="Build Awareness">Build Awareness</option>
-                    <option value="Drive Signups">Drive Signups</option>
-                    <option value="Establish Thought Leadership">Establish Thought Leadership</option>
-                  </Select>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted">
+                    Research Keywords
+                  </label>
+                  <div className="flex flex-wrap items-center gap-1.5 p-2 bg-surface border border-border rounded-control min-h-[38px]">
+                    {researchKeywords.map((kw, i) => (
+                      <Badge key={i} variant="accent" className="cursor-pointer" onClick={() => removeResearchKeyword(kw)}>
+                        {kw} <span className="ml-1 text-xs">×</span>
+                      </Badge>
+                    ))}
+                    <input
+                      type="text"
+                      placeholder="Add keyword..."
+                      value={researchKeywordInput}
+                      onChange={(e) => setResearchKeywordInput(e.target.value)}
+                      onKeyDown={addResearchKeyword}
+                      className="text-xs bg-transparent focus:outline-none flex-1 min-w-[120px]"
+                    />
+                  </div>
                 </div>
 
-                <Input
-                  label="Target Audience & Key Decision Makers"
-                  value={targetAudience}
-                  onChange={(e) => setTargetAudience(e.target.value)}
-                  error={formErrors.targetAudience}
-                  placeholder="e.g. VP Operations, Chief Technology Officers, Plant Managers"
-                />
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted">
+                    Content Type
+                  </label>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {contentTypeOptions.map((type) => {
+                      const isSelected = selectedContentTypes.includes(type);
+                      return (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() => toggleContentType(type)}
+                          className={`px-3 py-1 text-xs rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                            isSelected
+                              ? "font-medium shadow-sm hover:brightness-105"
+                              : "bg-raise text-ink-muted border-border hover:border-border-strong"
+                          }`}
+                          style={
+                            isSelected
+                              ? {
+                                  backgroundColor: "var(--accent-tint)",
+                                  borderColor: "var(--accent)",
+                                  color: "var(--accent)",
+                                }
+                              : undefined
+                          }
+                        >
+                          {type}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
               {/* Run Preview Card Right */}

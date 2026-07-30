@@ -45,7 +45,7 @@ export function LandingPage() {
 
   const testimonials = [
     {
-      quote: "Everline replaced our fragmented agency retainers with a continuous 10-agent pipeline. We went from shipping 4 articles per month to 24 approved, high-converting campaign assets in a fraction of the time.",
+      quote: "BrandSutra replaced our fragmented agency retainers with a continuous 10-agent pipeline. We went from shipping 4 articles per month to 24 approved, high-converting marketing assets in a fraction of the time.",
       author: "Marcus Vance",
       role: "VP of Growth",
       company: "Cognitive SCADA Systems",
@@ -58,7 +58,7 @@ export function LandingPage() {
       role: "Head of Digital Marketing",
       company: "Vertex BioPharma IT",
       monogram: "V",
-      metric: "4.8h Avg Campaign Turnaround",
+      metric: "4.8h Avg Marketing Turnaround",
     },
   ];
 
@@ -71,15 +71,15 @@ export function LandingPage() {
           <div className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-raise border border-border text-xs font-mono text-ink-muted">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-              <span>Everline Platform Architecture 2026</span>
+              <span>BrandSutra Platform Architecture 2026</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-ink tracking-tight leading-[1.15]">
-              Autonomous 10-agent pipeline for B2B marketing & website intelligence.
+              Autonomous Agentic AI pipeline for B2B marketing & website intelligence.
             </h1>
 
             <p className="text-sm sm:text-base text-ink-muted leading-relaxed max-w-xl">
-              Everline connects continuous RSS market signal scraping with an orchestrated multi-agent copywriting & audit engine to generate verified enterprise campaign deliverables.
+              BrandSutra connects continuous RSS market signal scraping with an orchestrated multi-agent copywriting & audit engine to generate verified enterprise marketing deliverables.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -120,7 +120,7 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
           <div className="flex items-center justify-between border-b border-border/60 pb-2">
             <span className="text-xs font-mono uppercase tracking-wider text-ink-subtle">
-              Autonomous Campaign Execution Lifecycle
+              Autonomous Marketing Execution Lifecycle
             </span>
             <span className="text-xs font-mono text-accent font-semibold">10-Agent Synchronization</span>
           </div>
@@ -142,7 +142,7 @@ export function LandingPage() {
         <div className="space-y-1">
           <span className="text-xs font-mono uppercase tracking-wider text-ink-subtle">Engineered for Technical Rigor</span>
           <h2 className="text-2xl sm:text-3xl font-bold text-ink tracking-tight">
-            Built as a deterministic multi-agent DAG — not a generic chatbot.
+            Built as a deterministic multi-agent system — not a generic automation platform.
           </h2>
         </div>
 
@@ -171,7 +171,7 @@ export function LandingPage() {
               </div>
               <h3 className="text-base font-bold text-ink">Automated Market & SERP Scraping</h3>
               <p className="text-xs text-ink-muted leading-relaxed">
-                Scans RSS news feeds and search volume spikes every 24 hours. Launches campaigns automatically when opportunity scores exceed threshold.
+                Scans RSS news feeds and search volume spikes every 24 hours. Launches marketing workflows automatically when opportunity scores exceed threshold.
               </p>
             </div>
             <div className="p-3 bg-raise rounded border border-border text-[11px] font-mono text-ink-subtle">
@@ -203,10 +203,10 @@ export function LandingPage() {
           <div className="space-y-1">
             <span className="text-xs font-mono uppercase tracking-wider text-ink-subtle">Production Outputs</span>
             <h2 className="text-2xl font-bold text-ink tracking-tight">
-              17 Structured Deliverables Generated Per Campaign & Audit Run
+              17 Structured Deliverables Generated Per Marketing & Audit Run
             </h2>
             <p className="text-xs text-ink-muted">
-              Every campaign run and website audit outputs production-ready markdown, JSON, and SVG assets.
+              Every marketing run and website audit outputs production-ready markdown, JSON, and SVG assets.
             </p>
           </div>
 

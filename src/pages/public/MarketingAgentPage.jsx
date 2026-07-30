@@ -43,7 +43,7 @@ export function MarketingAgentPage() {
       name: "Context Merger Agent",
       role: "Strategic Synthesis",
       desc: "Combines outputs from Trend, Research, and Competitive Intelligence into a unified strategic brief.",
-      outputPreview: "Thesis: Position Everline as the zero-downtime, offline-first edge AI maintenance platform."
+      outputPreview: "Thesis: Position BrandSutra as the zero-downtime, offline-first edge AI maintenance platform."
     },
     {
       num: "06",
@@ -64,7 +64,7 @@ export function MarketingAgentPage() {
       name: "SEO Agent",
       role: "Keyword & SERP Optimization",
       desc: "Generates primary/secondary keyword intent tags, meta titles, descriptions, and FAQ clusters.",
-      outputPreview: "Meta Title: 'Predictive Maintenance AI for Smart Manufacturing | Everline'"
+      outputPreview: "Meta Title: 'Predictive Maintenance AI for Smart Manufacturing | BrandSutra'"
     },
     {
       num: "09",
@@ -105,7 +105,7 @@ export function MarketingAgentPage() {
           Automate the Complete Marketing Lifecycle Across 10 Specialized Agents
         </h1>
         <p className="text-sm text-ink-muted leading-relaxed">
-          From continuous RSS market signals to human-approved multi-format campaign assets.
+          From continuous RSS market signals to human-approved multi-format marketing assets.
         </p>
       </div>
 
@@ -129,7 +129,7 @@ export function MarketingAgentPage() {
               <h3 className="text-sm font-semibold text-ink">Manual Topic Research</h3>
             </div>
             <p className="text-xs text-ink-muted leading-relaxed">
-              Input a specific campaign topic, industry vertical, business objective, and target decision-makers to launch an immediate full-lifecycle research & asset creation run.
+              Input a specific research topic, industry vertical, business objective, and target decision-makers to launch an immediate full-lifecycle research & asset creation run.
             </p>
           </Card>
         </div>
@@ -139,7 +139,7 @@ export function MarketingAgentPage() {
       <div className="space-y-6">
         <div className="space-y-1">
           <h2 className="text-2xl font-bold text-ink tracking-tight">The 10-Agent Pipeline Breakdown</h2>
-          <p className="text-xs text-ink-muted">Each agent performs a distinct role in the campaign execution lifecycle.</p>
+          <p className="text-xs text-ink-muted">Each agent performs a distinct role in the marketing execution lifecycle.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -172,7 +172,7 @@ export function MarketingAgentPage() {
       <Card className="p-6 bg-raise border-border space-y-4">
         <div className="space-y-1">
           <span className="text-xs font-mono uppercase tracking-wider text-accent font-semibold">Module 1 Deliverables</span>
-          <h3 className="text-lg font-bold text-ink">8 Mandatory Campaign Deliverables</h3>
+          <h3 className="text-lg font-bold text-ink">8 Mandatory Marketing Deliverables</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           {deliverables.map((item, i) => (
@@ -187,7 +187,7 @@ export function MarketingAgentPage() {
       {/* CTA */}
       <div className="flex items-center justify-between p-6 bg-surface rounded-card border border-border">
         <div>
-          <h3 className="text-base font-bold text-ink">Ready to run your first campaign?</h3>
+          <h3 className="text-base font-bold text-ink">Ready to run your first marketing workflow?</h3>
           <p className="text-xs text-ink-muted">Launch a 10-agent run in seconds.</p>
         </div>
         <Button variant="primary" icon={ArrowRight} onClick={() => navigate("/demo")}>

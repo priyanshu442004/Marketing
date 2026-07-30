@@ -12,11 +12,11 @@ export function IntegrationsPage() {
   const integrations = [
     { name: "RSS & News Feed Scraper", cat: "Signals", icon: Rss, desc: "Continuously ingest industry RSS feeds and market signal updates into Module 1." },
     { name: "Google Search Console API", cat: "SEO Telemetry", icon: Search, desc: "Sync live impression, CTR, and search intent clusters to feed the SEO Agent." },
-    { name: "LinkedIn Campaign Connector", cat: "Publishing", icon: Share2, desc: "Schedule and auto-draft multi-variant LinkedIn posts directly from approved runs." },
+    { name: "LinkedIn Publishing Connector", cat: "Publishing", icon: Share2, desc: "Schedule and auto-draft multi-variant LinkedIn posts directly from approved runs." },
     { name: "WordPress & CMS Webhook", cat: "Publishing", icon: Globe, desc: "Export approved blog posts, meta titles, and featured diagrams to your CMS." },
     { name: "HubSpot Marketing Hub", cat: "CRM & Demand", icon: Database, desc: "Push landing page copy and lead nurture email sequences straight into HubSpot." },
     { name: "Slack Notifications & Approval", cat: "Workflow", icon: MessageSquare, desc: "Receive immediate Slack alerts when a 10-agent pipeline completes and requires review." },
-    { name: "Developer API & Webhooks", cat: "Custom", icon: Code, desc: "Programmatically trigger campaign runs and retrieve JSON deliverable payloads." },
+    { name: "Developer API & Webhooks", cat: "Custom", icon: Code, desc: "Programmatically trigger marketing runs and retrieve JSON deliverable payloads." },
   ];
 
   const categories = ["All", "Signals", "SEO Telemetry", "Publishing", "CRM & Demand", "Workflow", "Custom"];
@@ -31,7 +31,7 @@ export function IntegrationsPage() {
           Native Connectors & API Webhooks
         </h1>
         <p className="text-sm text-ink-muted leading-relaxed">
-          Connect Everline's multi-agent pipeline to your existing content management systems, CRM tools, and alerting channels.
+          Connect BrandSutra's multi-agent pipeline to your existing content management systems, CRM tools, and alerting channels.
         </p>
       </div>
 

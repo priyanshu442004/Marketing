@@ -3,8 +3,8 @@ import { initialRuns, initialAnalyses, initialNotifications, MARKETING_AGENTS_DE
 
 const AppContext = createContext(null);
 
-const STORAGE_KEY_RUNS = "everline_demo_runs_v3";
-const STORAGE_KEY_ANALYSES = "everline_demo_analyses_v3";
+const STORAGE_KEY_RUNS = "BrandSutra_demo_runs_v3";
+const STORAGE_KEY_ANALYSES = "BrandSutra_demo_analyses_v3";
 
 export function AppProvider({ children }) {
   const [runs, setRuns] = useState(() => {
@@ -20,11 +20,11 @@ export function AppProvider({ children }) {
   const [notifications, setNotifications] = useState(initialNotifications);
 
   const [user, setUser] = useState({
-    name: "Alex Vance",
-    email: "alex.vance@everline.ai",
+    name: "Saurabh Dey",
+    email: "admin@brandsutra.com",
     role: "Head of Marketing Operations",
     avatar: null,
-    company: "Everline Marketing Inc.",
+    company: "All Above Design Studio",
     plan: "Enterprise Suite",
   });
 
@@ -150,7 +150,7 @@ export function AppProvider({ children }) {
         research: {
           brief: `Comprehensive market analysis for ${formData.industry}. Buyer intent remains focused on measurable efficiency and compliance guardrails.`,
           painPoints: [
-            { title: "Operational Overhead", description: "Manual processes slowing down campaign execution." },
+            { title: "Operational Overhead", description: "Manual processes slowing down marketing execution." },
             { title: "Compliance Drift", description: "Difficulty maintaining policy consistency across channels." }
           ],
           technologies: [
@@ -186,13 +186,13 @@ export function AppProvider({ children }) {
         seo: {
           keywords: [{ keyword: `${formData.topic || formData.industry} guide`, intent: "Transactional", volume: "14,200", difficulty: "38/100" }],
           serpPreview: {
-            title: `${topicTitle} | Everline Platform`,
-            url: `https://everline.ai/solutions/${formData.industry.toLowerCase().replace(/\s+/g, '-')}`,
-            description: `Accelerate enterprise growth with Everline's autonomous agent pipeline. Request an operational demo today.`
+            title: `${topicTitle} | BrandSutra Platform`,
+            url: `https://BrandSutra.ai/solutions/${formData.industry.toLowerCase().replace(/\s+/g, '-')}`,
+            description: `Accelerate enterprise growth with BrandSutra's autonomous agent pipeline. Request an operational demo today.`
           },
           searchIntentSummary: "High commercial intent with focus on automated execution.",
           internalLinks: [{ from: "/blog/overview", to: "/solutions/main" }],
-          faqs: ["How quickly can we deploy Everline agent pipelines?"]
+          faqs: ["How quickly can we deploy BrandSutra agent pipelines?"]
         }
       },
       outputs: {
@@ -218,7 +218,7 @@ export function AppProvider({ children }) {
             subject: `Optimizing ${formData.industry} strategy for enterprise teams`,
             preview: "Autonomous multi-agent execution framework...",
             status: "pending",
-            body: `Hi {{firstName}},\n\nReaching out because leadership in ${formData.industry} frequently faces bottlenecks in strategy execution.\n\nEverline automates market research, strategy, and asset generation in one unified pipeline.\n\nWould 10 minutes next Tuesday be worth a quick look?`
+            body: `Hi {{firstName}},\n\nReaching out because leadership in ${formData.industry} frequently faces bottlenecks in strategy execution.\n\nBrandSutra automates market research, strategy, and asset generation in one unified pipeline.\n\nWould 10 minutes next Tuesday be worth a quick look?`
           }
         ],
         adVariants: [

@@ -38,14 +38,12 @@ export function PublicFooter() {
 
           {/* Product Col */}
           <div className="space-y-3">
-            <h4 className="text-[11px] font-mono uppercase tracking-wider text-ink-subtle">Product</h4>
+            <h4 className="text-[11px] font-mono uppercase tracking-wider text-ink-subtle">Product Modules</h4>
             <ul className="space-y-2 text-ink-muted">
               <li><Link to="/platform" className="hover:text-ink transition-colors">Platform Overview</Link></li>
               <li><Link to="/platform/marketing-agent" className="hover:text-ink transition-colors">AI Marketing Agent</Link></li>
               <li><Link to="/platform/website-intelligence" className="hover:text-ink transition-colors">Website Intelligence</Link></li>
               <li><Link to="/integrations" className="hover:text-ink transition-colors">Integrations</Link></li>
-              <li><Link to="/pricing" className="hover:text-ink transition-colors">Pricing & Plans</Link></li>
-              <li><Link to="/security" className="hover:text-ink transition-colors">Security & Trust</Link></li>
             </ul>
           </div>
 
@@ -66,7 +64,7 @@ export function PublicFooter() {
             <ul className="space-y-2 text-ink-muted">
               <li><Link to="/blog" className="hover:text-ink transition-colors">Blog & Insights</Link></li>
               <li><Link to="/customers" className="hover:text-ink transition-colors">Customer Stories</Link></li>
-              <li><Link to="/about" className="hover:text-ink transition-colors">About Everline</Link></li>
+              <li><Link to="/about" className="hover:text-ink transition-colors">About BrandSutra</Link></li>
               <li><Link to="/careers" className="hover:text-ink transition-colors">Careers</Link></li>
               <li><Link to="/contact" className="hover:text-ink transition-colors">Contact Support</Link></li>
             </ul>
@@ -75,7 +73,7 @@ export function PublicFooter() {
 
         {/* Bottom Hairline Bar */}
         <div className="pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-ink-subtle">
-          <p>© 2026 Everline Platform Inc. All rights reserved.</p>
+          <p>© 2026 BrandSutra Platform Inc. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link to="/privacy" className="hover:text-ink transition-colors">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-ink transition-colors">Terms of Service</Link>

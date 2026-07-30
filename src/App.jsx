@@ -32,6 +32,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { MarketingRunsList } from "./pages/MarketingRunsList";
 import { NewMarketingRun } from "./pages/NewMarketingRun";
 import { MarketingRunDetail } from "./pages/MarketingRunDetail";
+import { ContentPlanningPage } from "./pages/ContentPlanningPage";
 import { WebsiteAnalysesList } from "./pages/WebsiteAnalysesList";
 import { NewWebsiteAnalysis } from "./pages/NewWebsiteAnalysis";
 import { WebsiteAnalysisDetail } from "./pages/WebsiteAnalysisDetail";
@@ -74,6 +75,9 @@ export default function App() {
             <Route path="/app" element={<AppShell />}>
               <Route index element={<Dashboard />} />
               <Route path="marketing" element={<MarketingRunsList />} />
+              <Route path="marketing/automated" element={<NewMarketingRun />} />
+              <Route path="marketing/manual" element={<NewMarketingRun />} />
+              <Route path="marketing/content" element={<ContentPlanningPage />} />
               <Route path="marketing/new" element={<NewMarketingRun />} />
               <Route path="marketing/runs/:id" element={<MarketingRunDetail />} />
               <Route path="website" element={<WebsiteAnalysesList />} />

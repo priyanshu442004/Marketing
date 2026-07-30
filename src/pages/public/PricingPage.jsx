@@ -18,7 +18,7 @@ export function PricingPage() {
       target: "For early-stage growth teams & niche B2B products.",
       popular: false,
       features: [
-        "5 Campaign Runs / month",
+        "5 Marketing Runs / month",
         "10 AI Marketing Agents",
         "2 Website Intelligence Audits / month",
         "Human Approval Gate Workflow",
@@ -34,7 +34,7 @@ export function PricingPage() {
       target: "For scaling B2B SaaS teams shipping 20+ assets per month.",
       popular: true,
       features: [
-        "25 Campaign Runs / month",
+        "25 Marketing Runs / month",
         "10 AI Marketing Agents + Trend Telemetry",
         "10 Website Intelligence Audits / month",
         "5-Area Business Gap Engine",
@@ -51,7 +51,7 @@ export function PricingPage() {
       target: "For multi-brand enterprises & high-volume agencies.",
       popular: false,
       features: [
-        "Unlimited Campaign Runs & Audits",
+        "Unlimited Marketing Runs & Audits",
         "Dedicated Custom Agent Fine-Tuning",
         "Custom RSS & Competitor Feeds",
         "Single Sign-On (SSO / SAML)",
@@ -63,7 +63,7 @@ export function PricingPage() {
   ];
 
   const comparisonRows = [
-    { name: "Monthly Campaign Runs", starter: "5", growth: "25", enterprise: "Unlimited" },
+    { name: "Monthly Marketing Runs", starter: "5", growth: "25", enterprise: "Unlimited" },
     { name: "10-Agent Pipeline Access", starter: "Yes", growth: "Yes", enterprise: "Yes" },
     { name: "Website Intelligence Audits", starter: "2 / mo", growth: "10 / mo", enterprise: "Unlimited" },
     { name: "Automated RSS Signals", starter: "No", growth: "Yes", enterprise: "Yes (Custom Feeds)" },
@@ -80,12 +80,12 @@ export function PricingPage() {
       a: "Yes, you can upgrade or switch billing cycles at any time. When switching to annual, the two-month discount applies automatically to your remaining period.",
     },
     {
-      q: "What happens when I reach my monthly campaign run limit?",
+      q: "What happens when I reach my monthly marketing run limit?",
       a: "Additional runs can be purchased on-demand for $40 per run on Starter or $30 on Growth, or you can upgrade to the next tier seamlessly.",
     },
     {
       q: "Is there a free trial available?",
-      a: "Yes! We offer a 14-day full access trial for growth teams. No credit card is required to set up your account and execute your first campaign run.",
+      a: "Yes! We offer a 14-day full access trial for growth teams. No credit card is required to set up your account and execute your first marketing run.",
     },
     {
       q: "How does the Human Approval Gate work?",
