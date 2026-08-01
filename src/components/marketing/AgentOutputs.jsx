@@ -83,77 +83,88 @@ export function SupervisorOutput({ run }) {
 // Agent 2: Trend Identification
 export function TrendOutput({ data }) {
   if (!data) return null;
-  const { kpis, keywords, hashtags, questions, seasonalCallout } = data;
+  const { kpis, totalKeywords, avgVolume, topRising, keywords, hashtags, questions, seasonalCallout } = data;
+
+  // Resolve dynamic values directly from backend DB fields or keywords array
+  const displayTotalKeywords = totalKeywords ?? kpis?.totalKeywords ?? (keywords?.length ? keywords.length : 0);
+  const displayAvgVolume = avgVolume ?? kpis?.avgVolume ?? (keywords?.length && keywords[0]?.volume ? keywords[0].volume : "15K");
+  const displayTopRising = topRising ?? kpis?.topRising ?? (keywords?.length && keywords[0]?.keyword ? keywords[0].keyword : "Top Market Trends");
 
   return (
     <div className="space-y-6">
-      {/* Top Mono KPIs */}
+      {/* Dynamic Mono KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="p-4">
           <span className="text-[11px] font-mono uppercase text-ink-subtle">Identified Keywords</span>
-          <div className="text-xl font-bold font-mono text-ink mt-1">{kpis?.totalKeywords || 48}</div>
+          <div className="text-xl font-bold font-mono text-ink mt-1">{displayTotalKeywords}</div>
         </Card>
         <Card className="p-4">
           <span className="text-[11px] font-mono uppercase text-ink-subtle">Avg Monthly Volume</span>
-          <div className="text-xl font-bold font-mono text-ink mt-1">{kpis?.avgVolume || "14.2K"}</div>
+          <div className="text-xl font-bold font-mono text-ink mt-1">{displayAvgVolume}</div>
         </Card>
         <Card className="p-4">
           <span className="text-[11px] font-mono uppercase text-ink-subtle">Top Rising Term</span>
-          <div className="text-xl font-bold font-mono text-accent mt-1">{kpis?.topRising || "Edge AI"}</div>
+          <div className="text-xl font-bold font-mono text-accent mt-1">{displayTopRising}</div>
         </Card>
       </div>
 
       {/* Keywords Table */}
-      <div className="space-y-2">
-        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
-          High-Intent Trending Keywords
-        </h4>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Keyword</TableHead>
-              <TableHead>Monthly Vol</TableHead>
-              <TableHead>Difficulty</TableHead>
-              <TableHead>Trend</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {keywords?.map((kw, i) => (
-              <TableRow key={i}>
-                <TableCell className="font-mono text-xs font-semibold text-ink">{kw.keyword}</TableCell>
-                <TableCell className="font-mono text-xs">{kw.volume}</TableCell>
-                <TableCell className="text-xs">{kw.difficulty}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1.5 text-xs text-success font-medium">
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    <span>Rising</span>
-                  </div>
-                </TableCell>
+      {keywords && keywords.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
+            High-Intent Trending Keywords
+          </h4>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Keyword</TableHead>
+                <TableHead>Monthly Vol</TableHead>
+                <TableHead>Difficulty</TableHead>
+                <TableHead>Trend</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {keywords.map((kw, i) => (
+                <TableRow key={i}>
+                  <TableCell className="font-mono text-xs font-semibold text-ink">{kw.keyword}</TableCell>
+                  <TableCell className="font-mono text-xs">{kw.volume || "N/A"}</TableCell>
+                  <TableCell className="text-xs">{kw.difficulty || "Medium"}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      <span>{kw.trend || "Rising"}</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Hashtags & Questions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Popular Hashtags</h4>
-          <div className="flex flex-wrap gap-1.5">
-            {hashtags?.map((tag, i) => (
-              <Badge key={i} variant="accent">{tag}</Badge>
-            ))}
-          </div>
-        </Card>
+        {hashtags && hashtags.length > 0 && (
+          <Card>
+            <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Popular Hashtags</h4>
+            <div className="flex flex-wrap gap-1.5">
+              {hashtags.map((tag, i) => (
+                <Badge key={i} variant="accent">{tag.startsWith("#") ? tag : `#${tag}`}</Badge>
+              ))}
+            </div>
+          </Card>
+        )}
 
-        <Card>
-          <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Questions People Ask</h4>
-          <ul className="space-y-2 text-xs text-ink list-disc list-inside">
-            {questions?.map((q, i) => (
-              <li key={i} className="leading-snug">{q}</li>
-            ))}
-          </ul>
-        </Card>
+        {questions && questions.length > 0 && (
+          <Card>
+            <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Questions People Ask</h4>
+            <ul className="space-y-2 text-xs text-ink list-disc list-inside">
+              {questions.map((q, i) => (
+                <li key={i} className="leading-snug">{q}</li>
+              ))}
+            </ul>
+          </Card>
+        )}
       </div>
 
       {/* Seasonal Callout */}
@@ -178,61 +189,69 @@ export function ResearchOutput({ data }) {
   return (
     <div className="space-y-6">
       {/* Brief */}
-      <Card>
-        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-subtle mb-2">
-          Audience & Market Research Brief
-        </h4>
-        <p className="text-xs text-ink leading-relaxed whitespace-pre-line">
-          {brief}
-        </p>
-      </Card>
+      {brief && (
+        <Card>
+          <h4 className="text-xs font-mono uppercase tracking-wider text-ink-subtle mb-2">
+            Audience & Market Research Brief
+          </h4>
+          <p className="text-xs text-ink leading-relaxed whitespace-pre-line">
+            {brief}
+          </p>
+        </Card>
+      )}
 
       {/* Pain Points */}
-      <div className="space-y-2">
-        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
-          Customer Pain Points
-        </h4>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {painPoints?.map((pp, i) => (
-            <Card key={i} className="p-4 bg-raise/50">
-              <h5 className="text-xs font-semibold text-ink">{pp.title}</h5>
-              <p className="text-[11px] text-ink-muted mt-1 leading-relaxed">{pp.description}</p>
-            </Card>
-          ))}
+      {painPoints && painPoints.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
+            Customer Pain Points
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {painPoints.map((pp, i) => (
+              <Card key={i} className="p-4 bg-raise/50">
+                <h5 className="text-xs font-semibold text-ink">{pp.title}</h5>
+                <p className="text-[11px] text-ink-muted mt-1 leading-relaxed">{pp.description}</p>
+              </Card>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* News & Technologies */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Emerging Tech Capabilities</h4>
-          <div className="space-y-2">
-            {technologies?.map((tech, i) => (
-              <div key={i} className="border-b border-border/60 pb-2 last:border-none">
-                <span className="text-xs font-semibold text-ink">{tech.name}</span>
-                <p className="text-[11px] text-ink-muted mt-0.5">{tech.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card>
-          <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Latest Industry News</h4>
-          <div className="space-y-2.5">
-            {news?.map((item, i) => (
-              <div key={i} className="space-y-0.5">
-                <p className="text-xs font-medium text-ink hover:text-accent cursor-pointer flex items-center gap-1">
-                  {item.headline} <ExternalLink className="w-3 h-3 text-ink-subtle" />
-                </p>
-                <div className="flex items-center gap-2 text-[10px] font-mono text-ink-subtle">
-                  <span>{item.source}</span>
-                  <span>•</span>
-                  <span>{item.date}</span>
+        {technologies && technologies.length > 0 && (
+          <Card>
+            <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Emerging Tech Capabilities</h4>
+            <div className="space-y-2">
+              {technologies.map((tech, i) => (
+                <div key={i} className="border-b border-border/60 pb-2 last:border-none">
+                  <span className="text-xs font-semibold text-ink">{tech.name}</span>
+                  <p className="text-[11px] text-ink-muted mt-0.5">{tech.desc}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {news && news.length > 0 && (
+          <Card>
+            <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Latest Industry News</h4>
+            <div className="space-y-2.5">
+              {news.map((item, i) => (
+                <div key={i} className="space-y-0.5">
+                  <p className="text-xs font-medium text-ink hover:text-accent cursor-pointer flex items-center gap-1">
+                    {item.headline} {item.url && <ExternalLink className="w-3 h-3 text-ink-subtle" />}
+                  </p>
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-ink-subtle">
+                    <span>{item.source}</span>
+                    <span>•</span>
+                    <span>{item.date}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );
@@ -246,56 +265,62 @@ export function CompetitiveOutput({ data }) {
   return (
     <div className="space-y-6">
       {/* Benchmark Table */}
-      <div className="space-y-2">
-        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
-          Competitor Benchmarking Matrix
-        </h4>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Competitor</TableHead>
-              <TableHead>Positioning</TableHead>
-              <TableHead>Key Strengths</TableHead>
-              <TableHead>Content Cadence</TableHead>
-              <TableHead>SEO Focus</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {competitors?.map((comp, i) => (
-              <TableRow key={i}>
-                <TableCell className="font-semibold text-xs text-ink">{comp.name}</TableCell>
-                <TableCell className="text-xs text-ink-muted">{comp.positioning}</TableCell>
-                <TableCell className="text-xs">{comp.strengths}</TableCell>
-                <TableCell className="font-mono text-xs">{comp.cadence}</TableCell>
-                <TableCell className="font-mono text-xs text-accent">{comp.seoFocus}</TableCell>
+      {competitors && competitors.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
+            Competitor Benchmarking Matrix
+          </h4>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Competitor</TableHead>
+                <TableHead>Positioning</TableHead>
+                <TableHead>Key Strengths</TableHead>
+                <TableHead>Content Cadence</TableHead>
+                <TableHead>SEO Focus</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {competitors.map((comp, i) => (
+                <TableRow key={i}>
+                  <TableCell className="font-semibold text-xs text-ink">{comp.name}</TableCell>
+                  <TableCell className="text-xs text-ink-muted">{comp.positioning}</TableCell>
+                  <TableCell className="text-xs">{comp.strengths}</TableCell>
+                  <TableCell className="font-mono text-xs">{comp.cadence}</TableCell>
+                  <TableCell className="font-mono text-xs text-accent">{comp.seoFocus}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Content Gap & Positioning Angles */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Content Gap Analysis</h4>
-          <ul className="space-y-2 text-xs text-ink list-disc list-inside">
-            {gaps?.map((gap, i) => (
-              <li key={i} className="leading-snug">{gap}</li>
-            ))}
-          </ul>
-        </Card>
+        {gaps && gaps.length > 0 && (
+          <Card>
+            <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Content Gap Analysis</h4>
+            <ul className="space-y-2 text-xs text-ink list-disc list-inside">
+              {gaps.map((gap, i) => (
+                <li key={i} className="leading-snug">{gap}</li>
+              ))}
+            </ul>
+          </Card>
+        )}
 
-        <Card>
-          <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Positioning Opportunities</h4>
-          <div className="space-y-2">
-            {angles?.map((angle, i) => (
-              <div key={i} className="p-2.5 rounded bg-accent-tint/40 border border-accent/20">
-                <span className="text-xs font-semibold text-accent">{angle.title}</span>
-                <p className="text-[11px] text-ink-muted mt-0.5">{angle.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
+        {angles && angles.length > 0 && (
+          <Card>
+            <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Positioning Opportunities</h4>
+            <div className="space-y-2">
+              {angles.map((angle, i) => (
+                <div key={i} className="p-2.5 rounded bg-accent-tint/40 border border-accent/20">
+                  <span className="text-xs font-semibold text-accent">{angle.title}</span>
+                  <p className="text-[11px] text-ink-muted mt-0.5">{angle.desc}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );
@@ -304,7 +329,8 @@ export function CompetitiveOutput({ data }) {
 // Agent 5: Context Merger
 export function ContextMergerOutput({ data }) {
   if (!data) return null;
-  const { title, takeaways, thesis } = data;
+  const { title, masterTitle, takeaways, thesis } = data;
+  const displayTitle = masterTitle || title || "Synthesized Master Brief";
 
   return (
     <Card className="p-6 space-y-4">
@@ -312,28 +338,32 @@ export function ContextMergerOutput({ data }) {
         <span className="text-[10px] font-mono uppercase tracking-wider text-ink-subtle">
           Synthesized Master Brief
         </span>
-        <h3 className="text-lg font-bold text-ink tracking-tight mt-1">{title}</h3>
+        <h3 className="text-lg font-bold text-ink tracking-tight mt-1">{displayTitle}</h3>
       </div>
 
-      <div className="space-y-2">
-        <h4 className="text-xs font-mono uppercase tracking-wider text-accent font-semibold">
-          Key Strategic Takeaways
-        </h4>
-        <ul className="space-y-1.5 text-xs text-ink list-disc list-inside bg-raise/50 p-3 rounded-control border border-border">
-          {takeaways?.map((t, i) => (
-            <li key={i}>{t}</li>
-          ))}
-        </ul>
-      </div>
+      {takeaways && takeaways.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-xs font-mono uppercase tracking-wider text-accent font-semibold">
+            Key Strategic Takeaways
+          </h4>
+          <ul className="space-y-1.5 text-xs text-ink list-disc list-inside bg-raise/50 p-3 rounded-control border border-border">
+            {takeaways.map((t, i) => (
+              <li key={i}>{t}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-      <div className="space-y-2 pt-2">
-        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-subtle">
-          Core Thesis & Strategic Angle
-        </h4>
-        <p className="text-xs text-ink leading-relaxed whitespace-pre-line bg-surface p-4 rounded border border-border font-sans">
-          {thesis}
-        </p>
-      </div>
+      {thesis && (
+        <div className="space-y-2 pt-2">
+          <h4 className="text-xs font-mono uppercase tracking-wider text-ink-subtle">
+            Core Thesis & Strategic Angle
+          </h4>
+          <p className="text-xs text-ink leading-relaxed whitespace-pre-line bg-surface p-4 rounded border border-border font-sans">
+            {thesis}
+          </p>
+        </div>
+      )}
     </Card>
   );
 }
@@ -341,61 +371,67 @@ export function ContextMergerOutput({ data }) {
 // Agent 6: Content Strategy
 export function StrategyOutput({ data }) {
   if (!data) return null;
-  const { types, objective, audience, communicationStyle, channels } = data;
+  const { types, selectedTypes, objective, audience, targetAudience, communicationStyle, channels } = data;
+  const displayTypes = selectedTypes || types || [];
+  const displayAudience = targetAudience || audience || "Decision Makers";
 
   return (
     <div className="space-y-6">
       {/* Types & Parameters */}
       <Card className="p-5 space-y-4">
-        <div>
-          <h4 className="text-xs font-mono uppercase text-ink-subtle mb-2">Selected Content Types</h4>
-          <div className="flex flex-wrap gap-2">
-            {types?.map((type, i) => (
-              <Badge key={i} variant="accent">{type}</Badge>
-            ))}
+        {displayTypes.length > 0 && (
+          <div>
+            <h4 className="text-xs font-mono uppercase text-ink-subtle mb-2">Selected Content Formats</h4>
+            <div className="flex flex-wrap gap-2">
+              {displayTypes.map((type, i) => (
+                <Badge key={i} variant="accent">{type}</Badge>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-border">
           <div>
             <span className="text-[11px] font-mono uppercase text-ink-subtle">Objective</span>
-            <p className="text-xs font-semibold text-ink mt-0.5">{objective}</p>
+            <p className="text-xs font-semibold text-ink mt-0.5">{objective || "Demand Generation"}</p>
           </div>
           <div>
             <span className="text-[11px] font-mono uppercase text-ink-subtle">Target Audience</span>
-            <p className="text-xs font-semibold text-ink mt-0.5">{audience}</p>
+            <p className="text-xs font-semibold text-ink mt-0.5">{displayAudience}</p>
           </div>
           <div>
             <span className="text-[11px] font-mono uppercase text-ink-subtle">Communication Style</span>
-            <p className="text-xs font-semibold text-ink mt-0.5">{communicationStyle}</p>
+            <p className="text-xs font-semibold text-ink mt-0.5">{communicationStyle || "Authoritative & Data-Backed"}</p>
           </div>
         </div>
       </Card>
 
       {/* Distribution Matrix */}
-      <div className="space-y-2">
-        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
-          Distribution Channels Matrix
-        </h4>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Channel</TableHead>
-              <TableHead>Format & Angle</TableHead>
-              <TableHead>Frequency</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {channels?.map((ch, i) => (
-              <TableRow key={i}>
-                <TableCell className="font-semibold text-xs text-ink">{ch.channel}</TableCell>
-                <TableCell className="text-xs text-ink-muted">{ch.format}</TableCell>
-                <TableCell className="font-mono text-xs text-accent">{ch.frequency}</TableCell>
+      {channels && channels.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
+            Distribution Channels Matrix
+          </h4>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Channel</TableHead>
+                <TableHead>Format & Angle</TableHead>
+                <TableHead>Frequency</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {channels.map((ch, i) => (
+                <TableRow key={i}>
+                  <TableCell className="font-semibold text-xs text-ink">{ch.channel}</TableCell>
+                  <TableCell className="text-xs text-ink-muted">{ch.format}</TableCell>
+                  <TableCell className="font-mono text-xs text-accent">{ch.frequency}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }
@@ -405,7 +441,7 @@ export function PlanningOutput({ data }) {
   const [viewMode, setViewMode] = useState("monthly");
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const calendarItems = data || [];
+  const calendarItems = Array.isArray(data) ? data : (data?.schedule || []);
 
   return (
     <div className="space-y-4">
@@ -437,7 +473,10 @@ export function PlanningOutput({ data }) {
           <div className="grid grid-cols-7 gap-1 pt-2 min-h-[240px]">
             {Array.from({ length: 28 }).map((_, idx) => {
               const dayNum = idx + 1;
-              const matchingItem = calendarItems.find((item) => item.date.endsWith(`-${dayNum < 10 ? '0' + dayNum : dayNum}`));
+              const matchingItem = calendarItems.find((item) => {
+                const dateStr = item.date || item.scheduledDate;
+                return dateStr && String(dateStr).endsWith(`-${dayNum < 10 ? '0' + dayNum : dayNum}`);
+              });
 
               return (
                 <div
@@ -468,8 +507,8 @@ export function PlanningOutput({ data }) {
                 <p className="text-xs font-semibold text-ink">{item.title}</p>
               </div>
               <div className="text-right font-mono text-xs text-ink-muted">
-                <div>{item.date}</div>
-                <div className="text-[10px] text-ink-subtle">{item.time}</div>
+                <div>{item.date || item.scheduledDate}</div>
+                <div className="text-[10px] text-ink-subtle">{item.time || item.scheduledTime}</div>
               </div>
             </Card>
           ))}
@@ -481,7 +520,7 @@ export function PlanningOutput({ data }) {
           <div className="space-y-1 text-xs">
             <span className="font-mono text-accent font-semibold">{selectedItem.channel} • Scheduled</span>
             <h5 className="font-semibold text-ink">{selectedItem.title}</h5>
-            <p className="text-ink-muted font-mono">Date: {selectedItem.date} at {selectedItem.time}</p>
+            <p className="text-ink-muted font-mono">Date: {selectedItem.date || selectedItem.scheduledDate} at {selectedItem.time || selectedItem.scheduledTime || '10:00 AM'}</p>
           </div>
           <Button size="sm" variant="ghost" onClick={() => setSelectedItem(null)}>Close</Button>
         </div>
@@ -493,82 +532,90 @@ export function PlanningOutput({ data }) {
 // Agent 8: SEO Output
 export function SeoOutput({ data }) {
   if (!data) return null;
-  const { keywords, serpPreview, searchIntentSummary, internalLinks, faqs } = data;
+  const { keywords, serpPreview, serpTitle, serpUrl, serpDescription, internalLinks, faqs } = data;
+
+  const displaySerp = serpPreview || (serpTitle ? { title: serpTitle, url: serpUrl || "https://example.com", description: serpDescription } : null);
 
   return (
     <div className="space-y-6">
       {/* Google SERP Preview Card */}
-      {serpPreview && (
+      {displaySerp && (
         <div className="space-y-2">
           <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
             Google SERP Snippet Preview
           </h4>
           <div className="p-4 rounded-card bg-surface border border-border space-y-1 font-sans">
             <div className="flex items-center gap-1.5 text-xs text-[#202124]">
-              <span className="text-[11px] text-[#5f6368] font-mono">{serpPreview.url}</span>
+              <span className="text-[11px] text-[#5f6368] font-mono">{displaySerp.url}</span>
             </div>
             <h3 className="text-base text-[#1a0dab] font-medium hover:underline cursor-pointer">
-              {serpPreview.title}
+              {displaySerp.title}
             </h3>
             <p className="text-xs text-[#4d5156] leading-relaxed">
-              {serpPreview.description}
+              {displaySerp.description}
             </p>
           </div>
         </div>
       )}
 
       {/* Keywords Table */}
-      <div className="space-y-2">
-        <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
-          Primary & Secondary Keywords
-        </h4>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Keyword</TableHead>
-              <TableHead>Intent</TableHead>
-              <TableHead>Search Volume</TableHead>
-              <TableHead>Keyword Difficulty</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {keywords?.map((kw, i) => (
-              <TableRow key={i}>
-                <TableCell className="font-mono text-xs font-semibold text-ink">{kw.keyword}</TableCell>
-                <TableCell>
-                  <Badge variant="accent">{kw.intent}</Badge>
-                </TableCell>
-                <TableCell className="font-mono text-xs">{kw.volume}</TableCell>
-                <TableCell className="font-mono text-xs">{kw.difficulty}</TableCell>
+      {keywords && keywords.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
+            Primary & Secondary Keywords
+          </h4>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Keyword</TableHead>
+                <TableHead>Intent</TableHead>
+                <TableHead>Search Volume</TableHead>
+                <TableHead>Keyword Difficulty</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {keywords.map((kw, i) => (
+                <TableRow key={i}>
+                  <TableCell className="font-mono text-xs font-semibold text-ink">{kw.keyword}</TableCell>
+                  <TableCell>
+                    <Badge variant="accent">{kw.intent || "Informational"}</Badge>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">{kw.volume || "10K"}</TableCell>
+                  <TableCell className="font-mono text-xs">{kw.difficulty || "Medium"}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Internal Links & FAQs */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Internal Linking Opportunities</h4>
-          <div className="space-y-2 text-xs">
-            {internalLinks?.map((link, i) => (
-              <div key={i} className="flex items-center justify-between font-mono bg-raise/60 p-2 rounded">
-                <span className="text-ink-muted">{link.from}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-accent" />
-                <span className="text-accent">{link.to}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+        {internalLinks && internalLinks.length > 0 && (
+          <Card>
+            <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Internal Linking Opportunities</h4>
+            <div className="space-y-2 text-xs">
+              {internalLinks.map((link, i) => (
+                <div key={i} className="flex items-center justify-between font-mono bg-raise/60 p-2 rounded">
+                  <span className="text-ink-muted">{link.from}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-accent" />
+                  <span className="text-accent">{link.to}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
 
-        <Card>
-          <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Suggested FAQs</h4>
-          <ul className="space-y-2 text-xs text-ink list-disc list-inside">
-            {faqs?.map((faq, i) => (
-              <li key={i} className="leading-snug">{faq}</li>
-            ))}
-          </ul>
-        </Card>
+        {faqs && faqs.length > 0 && (
+          <Card>
+            <h4 className="text-xs font-mono uppercase text-ink-subtle mb-3">Suggested FAQs</h4>
+            <ul className="space-y-2 text-xs text-ink list-disc list-inside">
+              {faqs.map((faq, i) => (
+                <li key={i} className="leading-snug">{faq}</li>
+              ))}
+            </ul>
+          </Card>
+        )}
       </div>
     </div>
   );
