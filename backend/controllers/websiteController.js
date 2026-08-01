@@ -5,7 +5,11 @@ const websiteController = {
   // Get all website analyses
   getAllAnalyses: async (req, res, next) => {
     try {
+      const userId = req.user?.id || req.query.userId || req.headers['x-user-id'];
+      const where = userId ? { userId } : {};
+
       const analyses = await prisma.websiteAnalysis.findMany({
+        where,
         include: {
           technicalOverview: true,
           pageInventory: true,
@@ -56,7 +60,12 @@ const websiteController = {
       const { url, companyName, overview, industry, targetAudience, products, services, goals, userId } = req.body;
 
       const analysisId = `ana-${Date.now()}`;
-      let defaultUserId = userId || (await prisma.user.findFirst())?.id;
+      const userIdFromReq = req.user?.id || userId || req.headers['x-user-id'];
+      let defaultUserId = userIdFromReq;
+
+      if (!defaultUserId) {
+        defaultUserId = (await prisma.user.findFirst())?.id;
+      }
 
       if (!defaultUserId) {
         const newUser = await prisma.user.create({

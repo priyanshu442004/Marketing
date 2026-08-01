@@ -8,6 +8,7 @@ import {
   SearchIcon,
   TrendingUp,
   SearchCode,
+  Layers,
 } from "lucide-react";
 import { BRAND } from "../../config";
 import { useAppStore } from "../../store/AppStore";
@@ -29,6 +30,7 @@ export function Sidebar() {
       items: [
         { label: "Automated Market Monitoring", to: "/app/marketing/automated", icon: SearchCode },
         { label: "Manual Topic Research", to: "/app/marketing/manual", icon: SearchIcon },
+        { label: "Marketing Runs", to: "/app/marketing", icon: Layers },
         { label: "Content Planning", to: "/app/marketing/content", icon: Sparkles },
       ],
     },
@@ -67,7 +69,10 @@ export function Sidebar() {
                 </div>
               )}
               {group.items.map((item) => {
-                const isActive = location.pathname === item.to;
+                const isActive =
+                  location.pathname === item.to ||
+                  (item.to === "/app/marketing" && (location.pathname === "/app/marketing" || location.pathname.startsWith("/app/marketing/runs"))) ||
+                  (item.to === "/app/website" && (location.pathname === "/app/website" || location.pathname.startsWith("/app/website/analyses")));
 
                 const Icon = item.icon;
 

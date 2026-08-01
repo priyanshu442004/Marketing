@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/AppStore";
+import { SEO } from "../components/common/SEO";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Badge, StatusChip } from "../components/ui/Badge";
@@ -28,16 +29,15 @@ export function Dashboard() {
   // Collect all pending assets
   const pendingAssets = [];
   runs.forEach((r) => {
-    if (!r.outputs) return;
-    if (r.outputs.blogPost && r.outputs.blogPost.status === "pending") {
-      pendingAssets.push({ runId: r.id, runTitle: r.title, ...r.outputs.blogPost });
+    if (r.outputs?.blogPost && r.outputs.blogPost.status === "pending") {
+      pendingAssets.push({ runId: r.id, runTopic: r.topic, ...r.outputs.blogPost });
     }
-    if (r.outputs.linkedinPosts) {
-      r.outputs.linkedinPosts.forEach((lp) => {
-        if (lp.status === "pending") pendingAssets.push({ runId: r.id, runTitle: r.title, ...lp });
-      });
+    if (r.outputs?.linkedinPosts) {
+      r.outputs.linkedinPosts
+        .filter((lp) => lp.status === "pending")
+        .forEach((lp) => pendingAssets.push({ runId: r.id, runTopic: r.topic, ...lp }));
     }
-    if (r.outputs.emailSequence) {
+    if (r.outputs?.emailSequence) {
       r.outputs.emailSequence.forEach((em) => {
         if (em.status === "pending") pendingAssets.push({ runId: r.id, runTitle: r.title, ...em });
       });

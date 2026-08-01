@@ -4,21 +4,33 @@ import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Badge } from "../components/ui/Badge";
 import { BRAND } from "../config";
-import { Shield, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
+import { useAppStore } from "../store/AppStore";
+import { Shield, Sparkles, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { loginUser } = useAppStore();
   const [email, setEmail] = useState("admin@brandsutra.com");
   const [password, setPassword] = useState("admin@123");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
       setError("Please enter both email and password.");
       return;
     }
-    navigate("/app");
+    setIsSubmitting(true);
+    setError("");
+    try {
+      await loginUser(email, password);
+      navigate("/app");
+    } catch (err) {
+      setError("Failed to sign in. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -66,8 +78,15 @@ export function LoginPage() {
               />
             </div>
 
-            <Button type="submit" variant="primary" className="w-full justify-center">
-              Continue to Workspace
+            <Button type="submit" variant="primary" disabled={isSubmitting} className="w-full justify-center">
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Continue to Workspace"
+              )}
             </Button>
 
             <div className="relative py-2 text-center">
@@ -134,7 +153,25 @@ export function LoginPage() {
 
 export function SignupPage() {
   const navigate = useNavigate();
+  const { registerUser } = useAppStore();
+  const [name, setName] = useState("Saurabh Dey");
+  const [email, setEmail] = useState("admin@brandsutra.com");
+  const [company, setCompany] = useState("All Above Design Studio");
   const [password, setPassword] = useState("admin@123");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await registerUser({ email, name, company });
+      navigate("/app");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col md:flex-row font-sans text-left">
@@ -154,10 +191,10 @@ export function SignupPage() {
             </p>
           </div>
 
-          <form onSubmit={(e) => { e.preventDefault(); navigate("/app"); }} className="mt-8 space-y-4 max-w-sm">
-            <Input label="Full Name" defaultValue="Saurabh Dey" />
-            <Input label="Work Email" type="email" defaultValue="admin@brandsutra.com" />
-            <Input label="Company Name" defaultValue="All Above Design Studio" />
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4 max-w-sm">
+            <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
+            <Input label="Work Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input label="Company Name" value={company} onChange={(e) => setCompany(e.target.value)} />
             
             <div className="space-y-1">
               <label className="text-xs font-semibold text-ink">Password</label>
@@ -175,8 +212,15 @@ export function SignupPage() {
               </div>
             </div>
 
-            <Button type="submit" variant="primary" className="w-full justify-center">
-              Create Account & Launch Workspace
+            <Button type="submit" variant="primary" disabled={isSubmitting} className="w-full justify-center">
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating workspace...
+                </>
+              ) : (
+                "Create Account & Launch Workspace"
+              )}
             </Button>
 
             <Button

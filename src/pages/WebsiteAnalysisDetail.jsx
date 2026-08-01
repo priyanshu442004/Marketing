@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/AppStore";
+import { SEO } from "../components/common/SEO";
 import { Button } from "../components/ui/Button";
 import { Badge, StatusChip } from "../components/ui/Badge";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card";
@@ -37,13 +38,42 @@ export function WebsiteAnalysisDetail() {
   const [expandedNavNode, setExpandedNavNode] = useState(true);
   const [expandedRecId, setExpandedRecId] = useState("rec-1");
 
-  const analysis = analyses.find((a) => a.id === id) || analyses[0];
+  const analysis = id ? analyses.find((a) => a.id === id) : analyses[0];
+
+  const handleExportAuditPackage = () => {
+    if (!analysis) return;
+    const blob = new Blob([JSON.stringify(analysis, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `website-audit-${analysis.domain}-${analysis.id}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Audit Package Exported",
+      description: `Downloaded domain analysis JSON bundle for ${analysis.domain}.`,
+      variant: "success",
+    });
+  };
 
   if (!analysis) {
     return (
-      <div className="p-8 text-center space-y-4">
-        <p className="text-sm text-ink-muted">Analysis not found.</p>
-        <Button onClick={() => navigate("/website")}>Back to List</Button>
+      <div className="p-12 text-center space-y-4 bg-surface rounded-card border border-border max-w-md mx-auto my-12 font-sans">
+        <Clock className="w-8 h-8 text-accent animate-spin mx-auto" />
+        <div>
+          <h3 className="text-base font-semibold text-ink">Loading Website Analysis...</h3>
+          <p className="text-xs text-ink-muted mt-1">
+            Fetching crawler data and audit status for <span className="font-mono text-accent">{id}</span>.
+          </p>
+        </div>
+        <div className="pt-2">
+          <Button variant="secondary" size="sm" onClick={() => navigate("/app/website")}>
+            Back to List
+          </Button>
+        </div>
       </div>
     );
   }
@@ -86,6 +116,10 @@ export function WebsiteAnalysisDetail() {
 
   return (
     <div className="space-y-6">
+      <SEO
+        title={`Audit: ${analysis.companyName || analysis.domain}`}
+        description={`Domain structure audit, health scorecard (${analysis.healthScore}/100), and 5-area analysis for ${analysis.url}.`}
+      />
       {/* Header Block */}
       <div className="bg-surface p-5 rounded-card border border-border space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -145,7 +179,7 @@ export function WebsiteAnalysisDetail() {
               <Button variant="secondary" icon={RefreshCw} onClick={handleReRun}>
                 Re-run Audit
               </Button>
-              <Button variant="primary" icon={Download} onClick={handleExport}>
+              <Button variant="primary" icon={Download} onClick={handleExportAuditPackage}>
                 Export Report
               </Button>
             </div>

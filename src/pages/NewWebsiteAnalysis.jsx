@@ -69,7 +69,9 @@ export function NewWebsiteAnalysis() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = {};
 
@@ -88,25 +90,37 @@ export function NewWebsiteAnalysis() {
       return;
     }
 
-    const payload = {
-      url,
-      companyName,
-      overview,
-      products,
-      services,
-      targetAudience,
-      industry,
-      goals: selectedGoals,
-    };
+    setIsSubmitting(true);
 
-    const newId = createAnalysis(payload);
-    toast({
-      title: "Analysis Started",
-      description: `3-agent crawler analyzing ${companyName}...`,
-      variant: "success",
-    });
+    try {
+      const payload = {
+        url,
+        companyName,
+        overview,
+        products,
+        services,
+        targetAudience,
+        industry,
+        goals: selectedGoals,
+      };
 
-    navigate(`/app/website/analyses/${newId}`);
+      const newId = await createAnalysis(payload);
+      toast({
+        title: "Analysis Started",
+        description: `3-agent crawler analyzing ${companyName}...`,
+        variant: "success",
+      });
+
+      navigate(`/app/website/analyses/${newId}`);
+    } catch (err) {
+      toast({
+        title: "Analysis Failed",
+        description: "Failed to initialize website audit.",
+        variant: "danger",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -277,8 +291,8 @@ export function NewWebsiteAnalysis() {
             <Button type="button" variant="secondary" onClick={() => navigate("/app/website")}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" icon={Sparkles}>
-              Run Website Analysis
+            <Button type="submit" variant="primary" icon={Sparkles} disabled={isSubmitting}>
+              {isSubmitting ? "Starting Crawler..." : "Run Website Analysis"}
             </Button>
           </div>
         </form>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/AppStore";
+import { SEO } from "../components/common/SEO";
 import { Button } from "../components/ui/Button";
 import { Badge, StatusChip } from "../components/ui/Badge";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card";
@@ -44,13 +45,23 @@ export function MarketingRunDetail() {
   const [selectedAgentId, setSelectedAgentId] = useState("agent-1");
   const [approvalFilter, setApprovalFilter] = useState("all");
 
-  const run = runs.find((r) => r.id === id) || runs[0];
+  const run = id ? runs.find((r) => r.id === id) : runs[0];
 
   if (!run) {
     return (
-      <div className="p-8 text-center space-y-4">
-        <p className="text-sm text-ink-muted">Run not found.</p>
-        <Button onClick={() => navigate("/marketing")}>Back to Runs</Button>
+      <div className="p-12 text-center space-y-4 bg-surface rounded-card border border-border max-w-md mx-auto my-12 font-sans">
+        <Clock className="w-8 h-8 text-accent animate-spin mx-auto" />
+        <div>
+          <h3 className="text-base font-semibold text-ink">Loading Marketing Run...</h3>
+          <p className="text-xs text-ink-muted mt-1">
+            Initializing 10-agent pipeline telemetry for <span className="font-mono text-accent">{id}</span>.
+          </p>
+        </div>
+        <div className="pt-2">
+          <Button variant="secondary" size="sm" onClick={() => navigate("/app/marketing")}>
+            Back to Runs
+          </Button>
+        </div>
       </div>
     );
   }
@@ -94,10 +105,29 @@ export function MarketingRunDetail() {
   };
 
   const handleDownloadDeliverable = (name) => {
+    const exportData = {
+      runId: run.id,
+      topic: run.topic,
+      industry: run.industry,
+      targetAudience: run.targetAudience,
+      deliverableName: name,
+      exportedAt: new Date().toISOString(),
+      outputs: run.outputs,
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${run.id}-${name.toLowerCase().replace(/[^a-z0-9]/g, "_")}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
     toast({
-      title: "Preparing Export",
-      description: `Bundling ${name} package for download...`,
-      variant: "info",
+      title: "Deliverable Exported",
+      description: `Downloaded ${name} package for ${run.id}.`,
+      variant: "success",
     });
   };
 
@@ -176,6 +206,10 @@ export function MarketingRunDetail() {
 
   return (
     <div className="space-y-6">
+      <SEO
+        title={`Run ${run.id} • ${run.topic}`}
+        description={`Telemetry and 10-agent output for ${run.topic} (${run.industry}).`}
+      />
       {/* Header Block */}
       <div className="bg-surface p-5 rounded-card border border-border space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

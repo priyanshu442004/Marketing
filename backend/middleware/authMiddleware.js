@@ -28,4 +28,21 @@ function authMiddleware(req, res, next) {
   }
 }
 
-module.exports = authMiddleware;
+function optionalAuthMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = verifyToken(token);
+      req.user = decoded;
+    } catch (error) {
+      // Ignore token verification errors in optional mode
+    }
+  }
+  return next();
+}
+
+module.exports = {
+  authMiddleware,
+  optionalAuthMiddleware,
+};

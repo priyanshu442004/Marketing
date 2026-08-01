@@ -6,7 +6,7 @@ import { Avatar } from "../ui/Avatar";
 import { useAppStore } from "../../store/AppStore";
 import { cn } from "../../lib/utils";
 
-export function Header() {
+export function Header({ onOpenSearch }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { notifications, markNotificationRead, deleteNotification, clearAllNotifications, user, logout } = useAppStore();
@@ -73,18 +73,17 @@ export function Header() {
 
       {/* Right Actions */}
       <div className="flex items-center gap-3">
-        {/* Global Search */}
-        <div className="relative hidden sm:block">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-subtle" />
-          <input
-            type="text"
-            placeholder="Search Marketing tools, audits..."
-            className="w-64 h-8 pl-8 pr-12 text-xs bg-raise border border-border rounded-control text-ink placeholder:text-ink-subtle focus-visible:outline-none focus-visible:border-accent focus-visible:bg-surface transition-colors"
-          />
-          <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-ink-subtle bg-surface border border-border px-1 py-0.5 rounded">
+        {/* Global Search Button / Trigger */}
+        <button
+          onClick={onOpenSearch}
+          className="relative hidden sm:flex items-center gap-3 w-64 h-8 px-3 text-xs bg-raise border border-border rounded-control text-ink-subtle hover:text-ink hover:border-accent/50 transition-colors focus-visible:outline-none"
+        >
+          <Search className="w-3.5 h-3.5 text-ink-subtle shrink-0" />
+          <span className="truncate">Search tools, runs, audits...</span>
+          <kbd className="ml-auto text-[10px] font-mono text-ink-subtle bg-surface border border-border px-1.5 py-0.5 rounded">
             ⌘K
           </kbd>
-        </div>
+        </button>
 
         {/* Theme Toggle */}
         <button

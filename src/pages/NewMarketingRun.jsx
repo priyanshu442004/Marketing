@@ -103,7 +103,9 @@ export function NewMarketingRun() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = {};
 
@@ -118,32 +120,44 @@ export function NewMarketingRun() {
       return;
     }
 
-    const payload = isManualFlow
-      ? {
-          topic,
-          source: "Manual",
-          industry: manualIndustry,
-          objective: businessObjective,
-          targetAudience: manualTargetAudience,
-          researchKeywords,
-          contentTypes: selectedContentTypes,
-        }
-      : {
-          topic: `Automated ${autoIndustry} Intelligence Stream`,
-          source: "Automated",
-          industry: autoIndustry,
-          objective: "Build Awareness",
-          targetAudience: "Enterprise Decision Makers",
-        };
+    setIsSubmitting(true);
 
-    const runId = createRun(payload);
-    toast({
-      title: "Marketing Run Started",
-      description: `Initialized 10-agent pipeline for ${runId}.`,
-      variant: "success",
-    });
+    try {
+      const payload = isManualFlow
+        ? {
+            topic,
+            source: "Manual",
+            industry: manualIndustry,
+            objective: businessObjective,
+            targetAudience: manualTargetAudience,
+            researchKeywords,
+            contentTypes: selectedContentTypes,
+          }
+        : {
+            topic: `Automated ${autoIndustry} Intelligence Stream`,
+            source: "Automated",
+            industry: autoIndustry,
+            objective: "Build Awareness",
+            targetAudience: "Enterprise Decision Makers",
+          };
 
-    navigate(`/app/marketing/runs/${runId}`);
+      const runId = await createRun(payload);
+      toast({
+        title: "Marketing Run Started",
+        description: `Initialized 10-agent pipeline for ${runId}.`,
+        variant: "success",
+      });
+
+      navigate(`/app/marketing/runs/${runId}`);
+    } catch (err) {
+      toast({
+        title: "Error Starting Run",
+        description: "Failed to initialize pipeline.",
+        variant: "danger",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -494,8 +508,8 @@ export function NewMarketingRun() {
             >
               Cancel
             </Button>
-            <Button type="submit" variant="primary" icon={Sparkles}>
-              Start Autonomous Run
+            <Button type="submit" variant="primary" icon={Sparkles} disabled={isSubmitting}>
+              {isSubmitting ? "Initializing Pipeline..." : "Start Autonomous Run"}
             </Button>
           </div>
         </form>

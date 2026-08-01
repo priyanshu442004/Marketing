@@ -1,4 +1,5 @@
 const prisma = require('../utils/prismaClient');
+const { generateToken } = require('../utils/jwt');
 const {
   googleLogin,
   googleCallback,
@@ -13,7 +14,14 @@ const authController = {
   // Get current user profile
   getMe: async (req, res, next) => {
     try {
-      let user = await prisma.user.findFirst();
+      const userId = req.user?.id || req.query.userId || req.headers['x-user-id'];
+      let user = null;
+      if (userId) {
+        user = await prisma.user.findUnique({ where: { id: userId } });
+      }
+      if (!user) {
+        user = await prisma.user.findFirst();
+      }
       if (!user) {
         user = await prisma.user.create({
           data: {
@@ -25,7 +33,8 @@ const authController = {
           },
         });
       }
-      return res.status(200).json({ success: true, data: user });
+      const token = generateToken({ id: user.id, email: user.email, name: user.name });
+      return res.status(200).json({ success: true, token, data: user });
     } catch (error) {
       return next(error);
     }
@@ -35,7 +44,8 @@ const authController = {
   updateMe: async (req, res, next) => {
     try {
       const { name, email, company, title, plan, avatarUrl } = req.body;
-      const currentUser = await prisma.user.findFirst();
+      const userId = req.user?.id || req.query.userId || req.headers['x-user-id'];
+      let currentUser = userId ? await prisma.user.findUnique({ where: { id: userId } }) : await prisma.user.findFirst();
 
       if (!currentUser) {
         return res.status(404).json({ success: false, message: 'User not found' });
@@ -62,12 +72,28 @@ const authController = {
   // Simple login endpoint
   login: async (req, res, next) => {
     try {
-      const { email } = req.body;
-      let user = await prisma.user.findFirst({ where: { email } });
+      const { email, name, company } = req.body;
+      const userEmail = email ? email.trim().toLowerCase() : null;
+
+      let user = null;
+      if (userEmail) {
+        user = await prisma.user.findFirst({ where: { email: userEmail } });
+      }
+      if (!user && userEmail) {
+        user = await prisma.user.create({
+          data: {
+            email: userEmail,
+            name: name || userEmail.split('@')[0],
+            company: company || 'Enterprise Suite',
+          },
+        });
+      }
       if (!user) {
         user = await prisma.user.findFirst();
       }
-      return res.status(200).json({ success: true, data: user });
+
+      const token = generateToken({ id: user.id, email: user.email, name: user.name });
+      return res.status(200).json({ success: true, token, data: user });
     } catch (error) {
       return next(error);
     }
@@ -77,14 +103,21 @@ const authController = {
   register: async (req, res, next) => {
     try {
       const { email, name, company } = req.body;
-      const newUser = await prisma.user.create({
-        data: {
-          email: email || `user_${Date.now()}@brandsutra.ai`,
-          name: name || 'Marketing Operator',
-          company: company || 'Enterprise Suite',
-        },
-      });
-      return res.status(201).json({ success: true, data: newUser });
+      const userEmail = email ? email.trim().toLowerCase() : `user_${Date.now()}@brandsutra.ai`;
+
+      let user = await prisma.user.findFirst({ where: { email: userEmail } });
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email: userEmail,
+            name: name || 'Marketing Operator',
+            company: company || 'Enterprise Suite',
+          },
+        });
+      }
+
+      const token = generateToken({ id: user.id, email: user.email, name: user.name });
+      return res.status(201).json({ success: true, token, data: user });
     } catch (error) {
       return next(error);
     }

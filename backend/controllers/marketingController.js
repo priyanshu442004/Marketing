@@ -5,7 +5,11 @@ const marketingController = {
   // Get all marketing runs
   getAllRuns: async (req, res, next) => {
     try {
+      const userId = req.user?.id || req.query.userId || req.headers['x-user-id'];
+      const where = userId ? { userId } : {};
+
       const runs = await prisma.marketingRun.findMany({
+        where,
         include: {
           agentExecutions: { orderBy: { stepNumber: 'asc' } },
           logs: { orderBy: { timestamp: 'asc' } },
@@ -62,7 +66,12 @@ const marketingController = {
       const { topic, industry, targetAudience, triggerMode, userId, rssTriggerUrl } = req.body;
 
       const runId = `run-${Date.now()}`;
-      let defaultUserId = userId || (await prisma.user.findFirst())?.id;
+      const userIdFromReq = req.user?.id || userId || req.headers['x-user-id'];
+      let defaultUserId = userIdFromReq;
+
+      if (!defaultUserId) {
+        defaultUserId = (await prisma.user.findFirst())?.id;
+      }
 
       if (!defaultUserId) {
         const newUser = await prisma.user.create({

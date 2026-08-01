@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const marketingController = require('../controllers/marketingController');
+const { optionalAuthMiddleware } = require('../middleware/authMiddleware');
+
+router.use(optionalAuthMiddleware);
 
 // GET all marketing runs
 router.get('/runs', marketingController.getAllRuns);

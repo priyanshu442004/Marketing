@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { SEO } from "../../components/common/SEO";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { InteractiveHeroPreview } from "../../components/public/ProductPreview";
@@ -64,6 +65,11 @@ export function LandingPage() {
 
   return (
     <div className="space-y-20 pb-20 font-sans text-left">
+      <SEO
+        title="Autonomous AI Marketing & Website Intelligence Platform"
+        description="BrandSutra orchestrates 10 specialized AI agents to automate multi-channel market research, competitive intelligence, content strategy, and website audits for B2B enterprises."
+        keywords="AI marketing platform, autonomous agents, website intelligence, B2B content marketing, SEO auditing"
+      />
       {/* Hero Section */}
       <section className="pt-12 md:pt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">

@@ -10,7 +10,7 @@ export function AppProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
 
   const [user, setUser] = useState({
-    id: null,
+    id: localStorage.getItem("brandsutra_user_id") || null,
     name: "Saurabh Dey",
     email: "saurabh@brandsutra.ai",
     role: "Head of Marketing Operations",
@@ -20,13 +20,97 @@ export function AppProvider({ children }) {
     avatar: null
   });
 
-  // Fetch current logged in user from backend DB
-  const fetchUser = useCallback(async () => {
+  // Helper to build headers with token and user ID
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("brandsutra_token");
+    const currentUserId = user?.id || localStorage.getItem("brandsutra_user_id");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (currentUserId) headers["X-User-Id"] = currentUserId;
+    return { headers, currentUserId };
+  };
+
+  // Login method
+  const loginUser = async (email, password) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/me`);
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.data) {
+          if (data.token) localStorage.setItem("brandsutra_token", data.token);
+          if (data.data.id) localStorage.setItem("brandsutra_user_id", data.data.id);
+          setUser({
+            id: data.data.id,
+            name: data.data.name || email.split("@")[0],
+            email: data.data.email || email,
+            role: data.data.role || "Head of Marketing Operations",
+            title: data.data.title || "Head of Marketing Operations",
+            company: data.data.company || "Enterprise Suite",
+            plan: data.data.plan || "Enterprise Suite",
+            avatar: data.data.avatarUrl || null
+          });
+          return true;
+        }
+      }
+    } catch (e) {
+      console.error("Login failed:", e);
+    }
+    return false;
+  };
+
+  // Register method
+  const registerUser = async ({ email, name, company }) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name, company })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          if (data.token) localStorage.setItem("brandsutra_token", data.token);
+          if (data.data.id) localStorage.setItem("brandsutra_user_id", data.data.id);
+          setUser({
+            id: data.data.id,
+            name: data.data.name || name,
+            email: data.data.email || email,
+            role: "Head of Marketing Operations",
+            title: "Head of Marketing Operations",
+            company: data.data.company || company,
+            plan: "Enterprise Suite",
+            avatar: data.data.avatarUrl || null
+          });
+          return true;
+        }
+      }
+    } catch (e) {
+      console.error("Register failed:", e);
+    }
+    return false;
+  };
+
+  // Fetch current logged in user from backend DB
+  const fetchUser = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("brandsutra_token");
+      const currentUserId = localStorage.getItem("brandsutra_user_id");
+      const headers = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      if (currentUserId) headers["X-User-Id"] = currentUserId;
+
+      const queryStr = currentUserId ? `?userId=${encodeURIComponent(currentUserId)}` : "";
+
+      const res = await fetch(`${API_BASE_URL}/auth/me${queryStr}`, { headers });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          if (data.token) localStorage.setItem("brandsutra_token", data.token);
+          if (data.data.id) localStorage.setItem("brandsutra_user_id", data.data.id);
           setUser({
             id: data.data.id,
             name: data.data.name || "Saurabh Dey",
@@ -47,9 +131,10 @@ export function AppProvider({ children }) {
   // Update user profile in backend DB
   const updateUserProfile = async (updatedData) => {
     try {
+      const { headers } = getAuthHeaders();
       const res = await fetch(`${API_BASE_URL}/auth/me`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(updatedData)
       });
       if (res.ok) {
@@ -79,7 +164,15 @@ export function AppProvider({ children }) {
   // Fetch notifications from backend DB
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/notifications`);
+      const token = localStorage.getItem("brandsutra_token");
+      const currentUserId = localStorage.getItem("brandsutra_user_id");
+      const headers = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      if (currentUserId) headers["X-User-Id"] = currentUserId;
+
+      const queryStr = currentUserId ? `?userId=${encodeURIComponent(currentUserId)}` : "";
+
+      const res = await fetch(`${API_BASE_URL}/notifications${queryStr}`, { headers });
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
@@ -105,9 +198,10 @@ export function AppProvider({ children }) {
       prev.map((n) => (n.id === id ? { ...n, read: readState } : n))
     );
     try {
+      const { headers } = getAuthHeaders();
       await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ read: readState })
       });
     } catch (e) {
@@ -119,7 +213,8 @@ export function AppProvider({ children }) {
   const deleteNotification = async (id) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
     try {
-      await fetch(`${API_BASE_URL}/notifications/${id}`, { method: "DELETE" });
+      const { headers } = getAuthHeaders();
+      await fetch(`${API_BASE_URL}/notifications/${id}`, { method: "DELETE", headers });
     } catch (e) {
       console.error("Failed to delete notification:", e);
     }
@@ -129,7 +224,8 @@ export function AppProvider({ children }) {
   const clearAllNotifications = async () => {
     setNotifications([]);
     try {
-      await fetch(`${API_BASE_URL}/notifications/clear/all`, { method: "DELETE" });
+      const { headers } = getAuthHeaders();
+      await fetch(`${API_BASE_URL}/notifications/clear/all`, { method: "DELETE", headers });
     } catch (e) {
       console.error("Failed to clear notifications:", e);
     }
@@ -138,6 +234,7 @@ export function AppProvider({ children }) {
   // Logout method
   const logout = () => {
     localStorage.removeItem("brandsutra_token");
+    localStorage.removeItem("brandsutra_user_id");
     setUser({
       id: null,
       name: "",
@@ -294,9 +391,17 @@ export function AppProvider({ children }) {
   // Sync from backend
   const fetchBackendData = useCallback(async () => {
     try {
+      const token = localStorage.getItem("brandsutra_token");
+      const currentUserId = user?.id || localStorage.getItem("brandsutra_user_id");
+      const headers = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      if (currentUserId) headers["X-User-Id"] = currentUserId;
+
+      const userParam = currentUserId ? `?userId=${encodeURIComponent(currentUserId)}` : "";
+
       const [runsRes, anaRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/marketing/runs`).then((r) => r.ok ? r.json() : null),
-        fetch(`${API_BASE_URL}/websites`).then((r) => r.ok ? r.json() : null)
+        fetch(`${API_BASE_URL}/marketing/runs${userParam}`, { headers }).then((r) => r.ok ? r.json() : null),
+        fetch(`${API_BASE_URL}/websites${userParam}`, { headers }).then((r) => r.ok ? r.json() : null)
       ]);
 
       if (runsRes && runsRes.success && Array.isArray(runsRes.data)) {
@@ -311,7 +416,7 @@ export function AppProvider({ children }) {
     } catch (e) {
       console.warn("Backend poll warning:", e.message);
     }
-  }, [mapBackendRunToFrontend, mapBackendAnalysisToFrontend]);
+  }, [user?.id, mapBackendRunToFrontend, mapBackendAnalysisToFrontend]);
 
   useEffect(() => {
     fetchUser();
@@ -335,9 +440,10 @@ export function AppProvider({ children }) {
 
   const updateAssetStatus = async (runId, assetId, status) => {
     try {
+      const { headers } = getAuthHeaders();
       await fetch(`${API_BASE_URL}/marketing/assets/${assetId}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ status: status.toUpperCase() })
       });
       fetchBackendData();
@@ -348,10 +454,12 @@ export function AppProvider({ children }) {
 
   const createRun = async (formData) => {
     try {
+      const { headers, currentUserId } = getAuthHeaders();
       const res = await fetch(`${API_BASE_URL}/marketing/runs`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
+          userId: currentUserId,
           topic: formData.topic || "AI Marketing Strategy Campaign",
           industry: formData.industry || "Enterprise SaaS",
           targetAudience: formData.targetAudience || "Decision Makers",
@@ -360,8 +468,8 @@ export function AppProvider({ children }) {
       });
       const data = await res.json();
       if (data.success && data.data) {
-        fetchBackendData();
-        fetchNotifications();
+        await fetchBackendData();
+        await fetchNotifications();
         return data.data.id;
       }
     } catch (e) {
@@ -374,10 +482,12 @@ export function AppProvider({ children }) {
 
   const createAnalysis = async (formData) => {
     try {
+      const { headers, currentUserId } = getAuthHeaders();
       const res = await fetch(`${API_BASE_URL}/websites`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
+          userId: currentUserId,
           url: formData.url,
           companyName: formData.companyName,
           industry: formData.industry,
@@ -390,8 +500,8 @@ export function AppProvider({ children }) {
       });
       const data = await res.json();
       if (data.success && data.data) {
-        fetchBackendData();
-        fetchNotifications();
+        await fetchBackendData();
+        await fetchNotifications();
         return data.data.id;
       }
     } catch (e) {
@@ -414,6 +524,8 @@ export function AppProvider({ children }) {
         notifications,
         user,
         setUser,
+        loginUser,
+        registerUser,
         updateUserProfile,
         createRun,
         createAnalysis,
