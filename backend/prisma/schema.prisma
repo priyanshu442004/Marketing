@@ -1,0 +1,535 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ======================================================
+// 1. USER & ORGANIZATION MANAGEMENT
+// ======================================================
+
+enum Role {
+  USER
+  MARKETER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  googleId      String?   @unique
+  company       String?
+  role          Role      @default(USER)
+  title         String?   @default("Operator")
+  plan          String    @default("Enterprise")
+  avatarUrl     String?
+  emailVerified DateTime?
+  refreshToken  String?   @db.Text
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  marketingRuns   MarketingRun[]
+  websiteAnalyses WebsiteAnalysis[]
+  rssSources      UserRssSource[]
+  connectors      UserConnector[]
+  activityLogs    ActivityLog[]
+  notifications   Notification[]
+
+  @@index([email])
+  @@index([googleId])
+  @@map("users")
+}
+
+model UserRssSource {
+  id            String    @id @default(cuid())
+  userId        String
+  url           String
+  title         String?
+  isActive      Boolean   @default(true)
+  lastFetchedAt DateTime?
+  fetchError    String?   @db.Text
+  createdAt     DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_rss_sources")
+}
+
+model UserConnector {
+  id          String    @id @default(cuid())
+  userId      String
+  connectorId String    // linkedin, gsc, hubspot, wordpress
+  name        String
+  connected   Boolean   @default(false)
+  accountName String?
+  config      Json?
+  status      String    @default("active") // active, expired, error
+  lastSyncedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([connectorId])
+  @@map("user_connectors")
+}
+
+// ======================================================
+// 2. MODULE 1: MULTI-AGENT MARKETING ENGINE
+// ======================================================
+
+enum RunStatus {
+  PENDING
+  RUNNING
+  AWAITING_APPROVAL
+  COMPLETED
+  FAILED
+}
+
+enum TriggerMode {
+  MANUAL
+  RSS_TRIGGERED
+  SCHEDULED
+}
+
+model MarketingRun {
+  id              String      @id @default(cuid())
+  userId          String
+  topic           String
+  industry        String
+  targetAudience  String?
+  status          RunStatus   @default(PENDING)
+  overallProgress Int         @default(0)
+  triggerMode     TriggerMode @default(MANUAL)
+  rssTriggerUrl   String?
+  summary         String?     @db.Text
+  scheduledAt     DateTime?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  totalTokensUsed Int         @default(0)
+  estimatedCost   Float       @default(0.0)
+  modelVersion    String?     @default("gpt-4.1-mini")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  agentExecutions   MarketingRunAgentExecution[]
+  logs              MarketingRunLog[]
+  trendData         TrendData?
+  researchData      ResearchData?
+  competitiveData   CompetitiveData?
+  contextMergerData ContextMergerData?
+  strategyData      StrategyData?
+  planningData      PlanningData[]
+  seoData           SeoData?
+  assets            MarketingAsset[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("marketing_runs")
+}
+
+model MarketingRunAgentExecution {
+  id            String    @id @default(cuid())
+  runId         String
+  agentId       String    // supervisor, trend, research, competitive, context, strategy, planning, seo, generator, creative
+  agentName     String
+  agentRole     String
+  status        RunStatus @default(PENDING)
+  stepNumber    Int
+  outputSummary String?   @db.Text
+  tokensUsed    Int       @default(0)
+  startedAt     DateTime?
+  completedAt   DateTime?
+
+  run MarketingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@index([agentId])
+  @@index([status])
+  @@map("marketing_run_agent_executions")
+}
+
+model MarketingRunLog {
+  id         String   @id @default(cuid())
+  runId      String
+  timestamp  DateTime @default(now())
+  logMessage String   @db.Text
+  logLevel   String   @default("info") // info, warn, error, success
+
+  run MarketingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@index([timestamp])
+  @@map("marketing_run_logs")
+}
+
+// ------------------------------------------------------
+// AGENT OUTPUT ENTITIES (Agents 2 - 8)
+// ------------------------------------------------------
+
+model TrendData {
+  id              String   @id @default(cuid())
+  runId           String   @unique
+  totalKeywords   Int
+  avgVolume       String
+  topRising       String
+  seasonalCallout String?  @db.Text
+  keywords        Json     // [{ keyword, volume, difficulty, trend }]
+  hashtags        Json     // string[]
+  questions       Json     // string[]
+
+  run MarketingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@map("trend_data")
+}
+
+model ResearchData {
+  id           String @id @default(cuid())
+  runId        String @unique
+  brief        String @db.Text
+  painPoints   Json   // [{ title, description }]
+  technologies Json   // [{ name, desc }]
+  news         Json   // [{ headline, source, date, url }]
+
+  run MarketingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@map("research_data")
+}
+
+model CompetitiveData {
+  id          String @id @default(cuid())
+  runId       String @unique
+  competitors Json   // [{ name, positioning, strengths, cadence, seoFocus }]
+  gaps        Json   // string[]
+  angles      Json   // [{ title, desc }]
+
+  run MarketingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@map("competitive_data")
+}
+
+model ContextMergerData {
+  id          String @id @default(cuid())
+  runId       String @unique
+  masterTitle String
+  takeaways   Json   // string[]
+  thesis      String @db.Text
+
+  run MarketingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@map("context_merger_data")
+}
+
+model StrategyData {
+  id                 String @id @default(cuid())
+  runId              String @unique
+  selectedTypes      Json   // string[] e.g. ["Blog", "LinkedIn", "Email"]
+  objective          String
+  targetAudience     String
+  communicationStyle String
+  channels           Json   // [{ channel, format, frequency }]
+
+  run MarketingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@map("strategy_data")
+}
+
+model PlanningData {
+  id            String   @id @default(cuid())
+  runId         String
+  title         String
+  channel       String
+  scheduledDate DateTime
+  scheduledTime String
+  status        String   @default("scheduled") // scheduled, published, draft
+
+  run MarketingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@index([scheduledDate])
+  @@map("planning_data")
+}
+
+model SeoData {
+  id              String  @id @default(cuid())
+  runId           String  @unique
+  serpUrl         String?
+  serpTitle       String?
+  serpDescription String? @db.Text
+  keywords        Json    // [{ keyword, intent, volume, difficulty }]
+  internalLinks   Json    // [{ from, to }]
+  faqs            Json    // string[]
+
+  run MarketingRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@map("seo_data")
+}
+
+// ======================================================
+// 3. ASSET MANAGEMENT & APPROVAL WORKFLOWS
+// ======================================================
+
+enum AssetStatus {
+  PENDING
+  APPROVED
+  CHANGES_REQUESTED
+  REJECTED
+  PUBLISHED
+}
+
+model MarketingAsset {
+  id            String      @id @default(cuid())
+  runId         String
+  assetType     String      // Blog Post, LinkedIn Post, Email Content, Ad Copy Variant, Landing Page Copy, Whitepaper, Newsletter, Case Study, Creative Asset
+  channel       String      // LinkedIn, Blog, Email, Newsletter, Google Ads, Landing Page, etc.
+  title         String
+  content       String      @db.Text
+  dimensions    String?     // for creative assets, e.g. "1920x1080 SVG"
+  status        AssetStatus @default(PENDING)
+  version       Int         @default(1)
+  scheduledFor  DateTime?
+  publishedAt   DateTime?
+  publishedUrl  String?
+  revisionNotes String?     @db.Text
+  metadata      Json?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  run       MarketingRun    @relation(fields: [runId], references: [id], onDelete: Cascade)
+  revisions AssetRevision[]
+
+  @@index([runId])
+  @@index([status])
+  @@index([assetType])
+  @@index([channel])
+  @@index([scheduledFor])
+  @@map("marketing_assets")
+}
+
+model AssetRevision {
+  id          String   @id @default(cuid())
+  assetId     String
+  version     Int
+  content     String   @db.Text
+  feedback    String?  @db.Text
+  status      String
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  asset MarketingAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId])
+  @@index([createdById])
+  @@map("asset_revisions")
+}
+
+// ======================================================
+// 4. MODULE 2: WEBSITE INTELLIGENCE & BUSINESS GAP AUDIT
+// ======================================================
+
+enum AnalysisStatus {
+  ANALYZING
+  COMPLETED
+  FAILED
+  ARCHIVED
+}
+
+enum ItemStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  DISMISSED
+}
+
+model WebsiteAnalysis {
+  id                String         @id @default(cuid())
+  userId            String
+  url               String
+  domain            String
+  companyName       String
+  overview          String         @db.Text
+  industry          String
+  targetAudience    String?
+  products          Json           // string[]
+  services          Json           // string[]
+  goals             Json           // string[]
+  status            AnalysisStatus @default(ANALYZING)
+  healthScore       Int?           // 0 to 100
+  lastCrawledAt     DateTime?
+  totalPagesCrawled Int            @default(0)
+  crawlErrors       Json?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  technicalOverview   TechnicalOverview?
+  pageInventory       PageInventoryItem[]
+  navigationHierarchy NavigationNode[]
+  gapAnalysis         GapAnalysisItem[]
+  scoreCategories     ScoreCategoryItem[]
+  recommendations     AuditRecommendation[]
+  roadmapItems        AuditRoadmapItem[]
+
+  @@index([userId])
+  @@index([domain])
+  @@index([status])
+  @@index([createdAt])
+  @@map("website_analyses")
+}
+
+model TechnicalOverview {
+  id              String   @id @default(cuid())
+  analysisId      String   @unique
+  pagesDiscovered Int      @default(0)
+  maxDepth        Int      @default(0)
+  sitemapFound    String   @default("Found")
+  avgLoadTime     String   @default("1.42s")
+
+  analysis WebsiteAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@map("technical_overviews")
+}
+
+model PageInventoryItem {
+  id            String @id @default(cuid())
+  analysisId    String
+  path          String
+  pageType      String
+  title         String
+  wordCount     Int
+  internalLinks Int
+  status        String @default("OK")
+
+  analysis WebsiteAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
+  @@map("page_inventory_items")
+}
+
+model NavigationNode {
+  id         String  @id @default(cuid())
+  analysisId String
+  name       String
+  parentId   String?
+  order      Int     @default(0)
+
+  analysis WebsiteAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
+  @@map("navigation_nodes")
+}
+
+model GapAnalysisItem {
+  id           String @id @default(cuid())
+  analysisId   String
+  category     String // businessAlignment, contentAnalysis, seoAnalysis, conversionAnalysis, userExperience
+  title        String
+  finding      String @db.Text
+  whyItMatters String @db.Text
+  severity     String // low, medium, high
+
+  analysis WebsiteAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
+  @@index([category])
+  @@map("gap_analysis_items")
+}
+
+model ScoreCategoryItem {
+  id         String @id @default(cuid())
+  analysisId String
+  name       String
+  score      Int
+
+  analysis WebsiteAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
+  @@map("score_category_items")
+}
+
+model AuditRecommendation {
+  id         String     @id @default(cuid())
+  analysisId String
+  category   String
+  title      String
+  impact     String     // High Impact, Medium Impact, Low Impact
+  effort     String     // Low Effort, Medium Effort, High Effort
+  severity   String     // high, medium, low
+  details    String     @db.Text
+  status     ItemStatus @default(TODO)
+
+  analysis WebsiteAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
+  @@index([status])
+  @@map("audit_recommendations")
+}
+
+model AuditRoadmapItem {
+  id         String     @id @default(cuid())
+  analysisId String
+  phase      String     // now, next, later
+  title      String
+  category   String
+  effort     String
+  status     ItemStatus @default(TODO)
+
+  analysis WebsiteAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
+  @@index([phase])
+  @@index([status])
+  @@map("audit_roadmap_items")
+}
+
+// ======================================================
+// 5. SYSTEM AUDIT TRAIL & NOTIFICATIONS
+// ======================================================
+
+model ActivityLog {
+  id           String   @id @default(cuid())
+  userId       String?
+  action       String   // USER_LOGIN, RUN_STARTED, ASSET_APPROVED, ANALYSIS_CREATED
+  resourceType String?  // MarketingRun, WebsiteAnalysis, MarketingAsset
+  resourceId   String?
+  details      Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  type      String   @default("info") // info, success, warning, error
+  link      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@map("notifications")
+}

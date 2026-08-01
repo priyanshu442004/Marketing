@@ -37,6 +37,9 @@ export function NewMarketingRun() {
 
   // Manual form state
   const [topic, setTopic] = useState("Agentic AI & Autonomous SCADA Telemetry in Manufacturing");
+  const [manualIndustry, setManualIndustry] = useState("Manufacturing");
+  const [businessObjective, setBusinessObjective] = useState("Generate Enterprise Leads");
+  const [manualTargetAudience, setManualTargetAudience] = useState("CXOs & VP Operations");
   const [researchKeywordInput, setResearchKeywordInput] = useState("");
   const [researchKeywords, setResearchKeywords] = useState(["Agentic AI", "SCADA", "Manufacturing"]);
   const [selectedContentTypes, setSelectedContentTypes] = useState(["Blog", "LinkedIn"]);
@@ -119,6 +122,9 @@ export function NewMarketingRun() {
       ? {
           topic,
           source: "Manual",
+          industry: manualIndustry,
+          objective: businessObjective,
+          targetAudience: manualTargetAudience,
           researchKeywords,
           contentTypes: selectedContentTypes,
         }
@@ -345,6 +351,35 @@ export function NewMarketingRun() {
                   placeholder="e.g. Agentic AI & Autonomous SCADA Telemetry in Manufacturing"
                   helperText="Define the specific thesis, product release, or industry trend to investigate."
                 />
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <Select
+                    label="Industry"
+                    value={manualIndustry}
+                    onChange={(e) => setManualIndustry(e.target.value)}
+                  >
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Enterprise SaaS">Enterprise SaaS</option>
+                    <option value="Healthcare IT">Healthcare IT</option>
+                    <option value="FinTech">FinTech</option>
+                    <option value="E-Commerce">E-Commerce</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                  </Select>
+
+                  <Input
+                    label="Business Objective"
+                    value={businessObjective}
+                    onChange={(e) => setBusinessObjective(e.target.value)}
+                    placeholder="e.g. Generate Enterprise Leads"
+                  />
+
+                  <Input
+                    label="Target Audience"
+                    value={manualTargetAudience}
+                    onChange={(e) => setManualTargetAudience(e.target.value)}
+                    placeholder="e.g. CXOs & VP Operations"
+                  />
+                </div>
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted">
