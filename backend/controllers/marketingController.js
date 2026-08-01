@@ -1,4 +1,5 @@
 const prisma = require('../utils/prismaClient');
+const marketingOrchestrator = require('../services/marketingOrchestrator');
 
 const marketingController = {
   // Get all marketing runs
@@ -6,8 +7,8 @@ const marketingController = {
     try {
       const runs = await prisma.marketingRun.findMany({
         include: {
-          agentExecutions: true,
-          logs: true,
+          agentExecutions: { orderBy: { stepNumber: 'asc' } },
+          logs: { orderBy: { timestamp: 'asc' } },
           trendData: true,
           researchData: true,
           competitiveData: true,
@@ -32,8 +33,8 @@ const marketingController = {
       const run = await prisma.marketingRun.findUnique({
         where: { id },
         include: {
-          agentExecutions: true,
-          logs: true,
+          agentExecutions: { orderBy: { stepNumber: 'asc' } },
+          logs: { orderBy: { timestamp: 'asc' } },
           trendData: true,
           researchData: true,
           competitiveData: true,
@@ -61,10 +62,16 @@ const marketingController = {
       const { topic, industry, targetAudience, triggerMode, userId, rssTriggerUrl } = req.body;
 
       const runId = `run-${Date.now()}`;
-      const defaultUserId = userId || (await prisma.user.findFirst())?.id;
+      let defaultUserId = userId || (await prisma.user.findFirst())?.id;
 
       if (!defaultUserId) {
-        return res.status(400).json({ success: false, message: 'No user ID available for run creation' });
+        const newUser = await prisma.user.create({
+          data: {
+            email: `user_${Date.now()}@brandsutra.ai`,
+            name: 'Marketing Lead',
+          }
+        });
+        defaultUserId = newUser.id;
       }
 
       const newRun = await prisma.marketingRun.create({
@@ -80,7 +87,7 @@ const marketingController = {
           overallProgress: 0,
           agentExecutions: {
             create: [
-              { agentId: 'supervisor', agentName: 'Agent 01: Marketing Supervisor', agentRole: 'Orchestrator', stepNumber: 1, status: 'RUNNING' },
+              { agentId: 'supervisor', agentName: 'Agent 01: Marketing Supervisor', agentRole: 'Orchestrator', stepNumber: 1, status: 'PENDING' },
               { agentId: 'trend', agentName: 'Agent 02: Trend Identification', agentRole: 'Trend Miner', stepNumber: 2, status: 'PENDING' },
               { agentId: 'research', agentName: 'Agent 03: Research Agent', agentRole: 'Deep Context Synthesizer', stepNumber: 3, status: 'PENDING' },
               { agentId: 'competitive', agentName: 'Agent 04: Competitive Intelligence', agentRole: 'Positioning Evaluator', stepNumber: 4, status: 'PENDING' },
@@ -102,6 +109,11 @@ const marketingController = {
           agentExecutions: true,
           logs: true,
         },
+      });
+
+      // Trigger pipeline asynchronously with DeepSeek
+      marketingOrchestrator.runMarketingPipeline(newRun.id).catch((err) => {
+        console.error(`Error in async marketing pipeline for ${newRun.id}:`, err);
       });
 
       return res.status(201).json({ success: true, data: newRun });

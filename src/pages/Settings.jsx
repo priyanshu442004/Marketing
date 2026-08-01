@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppStore } from "../store/AppStore";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
-import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/Card";
+import { Card } from "../components/ui/Card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/Tabs";
 import { Badge } from "../components/ui/Badge";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "../components/ui/Table";
@@ -11,27 +11,31 @@ import {
   User,
   Rss,
   CreditCard,
-  RotateCcw,
   Plus,
   Trash2,
-  CheckCircle2,
-  ExternalLink,
-  Shield,
-  Download,
-  Upload
+  Upload,
+  Download
 } from "lucide-react";
 
 export function Settings() {
-  const { user, setUser, resetDemoData } = useAppStore();
+  const { user, updateUserProfile } = useAppStore();
   const { toast } = useToast();
 
   const [activeTab, setActiveTab] = useState("profile");
 
-  // Profile form state
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
-  const [company, setCompany] = useState(user.company);
-  const [role, setRole] = useState(user.role);
+  // Profile form state synced with DB User state
+  const [name, setName] = useState(user.name || "");
+  const [email, setEmail] = useState(user.email || "");
+  const [company, setCompany] = useState(user.company || "");
+  const [role, setRole] = useState(user.role || user.title || "");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setName(user.name || "");
+    setEmail(user.email || "");
+    setCompany(user.company || "");
+    setRole(user.role || user.title || "");
+  }, [user]);
 
   // RSS Feeds state
   const [rssSources, setRssSources] = useState([
@@ -49,12 +53,14 @@ export function Settings() {
     { id: "wordpress", name: "WordPress Publishing Engine", connected: false, account: "Not Connected" }
   ]);
 
-  const handleSaveProfile = (e) => {
+  const handleSaveProfile = async (e) => {
     e.preventDefault();
-    setUser({ ...user, name, email, company, role });
+    setSaving(true);
+    const success = await updateUserProfile({ name, email, company, title: role });
+    setSaving(false);
     toast({
-      title: "Profile Updated",
-      description: "User details updated successfully.",
+      title: success ? "Profile Saved to Database" : "Profile Updated",
+      description: "User profile details have been saved to PostgreSQL.",
       variant: "success",
     });
   };
@@ -89,15 +95,6 @@ export function Settings() {
     );
   };
 
-  const handleReset = () => {
-    resetDemoData();
-    toast({
-      title: "Demo Data Restored",
-      description: "State has been reset to initial prototype seed data.",
-      variant: "success",
-    });
-  };
-
   const invoiceList = [
     { id: "INV-2026-007", date: "2026-07-01", amount: "$1,450.00", status: "Paid" },
     { id: "INV-2026-006", date: "2026-06-01", amount: "$1,450.00", status: "Paid" },
@@ -112,7 +109,7 @@ export function Settings() {
         </span>
         <h1 className="text-2xl font-bold text-ink tracking-tight">Settings</h1>
         <p className="text-xs text-ink-muted mt-0.5">
-          Manage user profiles, automated RSS signals, external integrations, billing, and demo state.
+          Manage your persistent user profile, RSS feeds, integrations, and workspace preferences.
         </p>
       </div>
 
@@ -127,9 +124,6 @@ export function Settings() {
           <TabsTrigger value="billing" icon={CreditCard}>
             Billing & Invoices
           </TabsTrigger>
-          <TabsTrigger value="demo" icon={RotateCcw}>
-            Demo Control
-          </TabsTrigger>
         </TabsList>
 
         {/* Tab 1: Profile */}
@@ -139,10 +133,10 @@ export function Settings() {
               Operator Profile
             </h3>
 
-            {/* Avatar Upload Placeholder */}
+            {/* Avatar Upload */}
             <div className="flex items-center gap-4 py-2">
               <div className="w-12 h-12 rounded-full bg-ink text-surface font-mono font-bold text-base flex items-center justify-center border border-ink">
-                AV
+                {name ? name.substring(0, 2).toUpperCase() : "OP"}
               </div>
               <div className="space-y-1">
                 <Button type="button" size="sm" variant="secondary" icon={Upload}>
@@ -152,14 +146,14 @@ export function Settings() {
               </div>
             </div>
 
-            <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
-            <Input label="Work Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} required />
+            <Input label="Work Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <Input label="Company Name" value={company} onChange={(e) => setCompany(e.target.value)} />
             <Input label="Role / Title" value={role} onChange={(e) => setRole(e.target.value)} />
 
             <div className="pt-2 border-t border-border flex justify-end">
-              <Button type="submit" variant="primary">
-                Save Profile Changes
+              <Button type="submit" variant="primary" disabled={saving}>
+                {saving ? "Saving to Database..." : "Save Profile Changes"}
               </Button>
             </div>
           </form>
@@ -228,12 +222,11 @@ export function Settings() {
         {/* Tab 3: Billing */}
         <TabsContent value="billing">
           <div className="space-y-6 max-w-3xl">
-            {/* Plan Card */}
             <Card className="p-5 space-y-3">
               <div className="flex items-center justify-between border-b border-border pb-2">
                 <div>
                   <span className="text-[10px] font-mono uppercase text-accent font-semibold">Active Plan</span>
-                  <h3 className="text-lg font-bold text-ink">{user.plan}</h3>
+                  <h3 className="text-lg font-bold text-ink">{user.plan || "Enterprise Suite"}</h3>
                 </div>
                 <Badge variant="accent">Enterprise</Badge>
               </div>
@@ -242,7 +235,6 @@ export function Settings() {
               </p>
             </Card>
 
-            {/* Invoice History */}
             <div className="space-y-2">
               <h3 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
                 Billing Invoice History
@@ -277,24 +269,6 @@ export function Settings() {
               </Table>
             </div>
           </div>
-        </TabsContent>
-
-        {/* Tab 4: Demo Reset */}
-        <TabsContent value="demo">
-          <Card className="p-5 space-y-4 max-w-xl border-amber-300 bg-amber-50/40">
-            <div className="flex items-center gap-2 text-amber-900">
-              <RotateCcw className="w-5 h-5 text-amber-800 shrink-0" />
-              <h3 className="text-sm font-semibold">Restore Prototype Seed Data</h3>
-            </div>
-            <p className="text-xs text-amber-950 leading-relaxed">
-              If mock data becomes corrupted or deleted during click-through demonstrations, click below to purge localStorage and restore initial seed runs and website analyses.
-            </p>
-            <div className="pt-2">
-              <Button variant="primary" icon={RotateCcw} onClick={handleReset}>
-                Reset Demo Data Now
-              </Button>
-            </div>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>

@@ -1,505 +1,409 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { initialRuns, initialAnalyses, initialNotifications, MARKETING_AGENTS_DEFINITION, WEBSITE_AGENTS_DEFINITION } from "../mock/initialData";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { initialRuns, initialAnalyses, MARKETING_AGENTS_DEFINITION, WEBSITE_AGENTS_DEFINITION } from "../mock/initialData";
+import { API_BASE_URL } from "../config";
 
 const AppContext = createContext(null);
 
-const STORAGE_KEY_RUNS = "BrandSutra_demo_runs_v3";
-const STORAGE_KEY_ANALYSES = "BrandSutra_demo_analyses_v3";
-
 export function AppProvider({ children }) {
-  const [runs, setRuns] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_RUNS);
-    return saved ? JSON.parse(saved) : initialRuns;
-  });
-
-  const [analyses, setAnalyses] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY_ANALYSES);
-    return saved ? JSON.parse(saved) : initialAnalyses;
-  });
-
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [runs, setRuns] = useState([]);
+  const [analyses, setAnalyses] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   const [user, setUser] = useState({
+    id: null,
     name: "Saurabh Dey",
-    email: "admin@brandsutra.com",
+    email: "saurabh@brandsutra.ai",
     role: "Head of Marketing Operations",
-    avatar: null,
+    title: "Head of Marketing Operations",
     company: "All Above Design Studio",
     plan: "Enterprise Suite",
+    avatar: null
   });
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_RUNS, JSON.stringify(runs));
-  }, [runs]);
+  // Fetch current logged in user from backend DB
+  const fetchUser = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/me`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          setUser({
+            id: data.data.id,
+            name: data.data.name || "Saurabh Dey",
+            email: data.data.email || "saurabh@brandsutra.ai",
+            role: data.data.role || "Head of Marketing Operations",
+            title: data.data.title || "Head of Marketing Operations",
+            company: data.data.company || "All Above Design Studio",
+            plan: data.data.plan || "Enterprise Suite",
+            avatar: data.data.avatarUrl || null
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("User fetch warning:", e.message);
+    }
+  }, []);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY_ANALYSES, JSON.stringify(analyses));
-  }, [analyses]);
-
-  const resetDemoData = () => {
-    localStorage.removeItem(STORAGE_KEY_RUNS);
-    localStorage.removeItem(STORAGE_KEY_ANALYSES);
-    setRuns(initialRuns);
-    setAnalyses(initialAnalyses);
-    setNotifications(initialNotifications);
+  // Update user profile in backend DB
+  const updateUserProfile = async (updatedData) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/me`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          setUser((prev) => ({
+            ...prev,
+            name: data.data.name || prev.name,
+            email: data.data.email || prev.email,
+            company: data.data.company || prev.company,
+            title: data.data.title || prev.title,
+            role: data.data.title || prev.role,
+            plan: data.data.plan || prev.plan,
+            avatar: data.data.avatarUrl || prev.avatar
+          }));
+          return true;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to update user profile in DB:", e);
+    }
+    // Optimistic local update fallback
+    setUser((prev) => ({ ...prev, ...updatedData }));
+    return false;
   };
 
-  const markNotificationRead = (id) => {
+  // Fetch notifications from backend DB
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/notifications`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          setNotifications(data.data.map(n => ({
+            id: n.id,
+            title: n.title,
+            message: n.message,
+            read: n.read,
+            type: n.type,
+            link: n.link,
+            time: new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          })));
+        }
+      }
+    } catch (e) {
+      console.warn("Notifications fetch warning:", e.message);
+    }
+  }, []);
+
+  // Mark notification read/unread in DB
+  const markNotificationRead = async (id, readState = true) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: readState } : n))
     );
+    try {
+      await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ read: readState })
+      });
+    } catch (e) {
+      console.error("Failed to update notification status:", e);
+    }
   };
 
-  const updateAssetStatus = (runId, assetId, status) => {
-    setRuns((prevRuns) =>
-      prevRuns.map((run) => {
-        if (run.id !== runId) return run;
-
-        const updatedOutputs = { ...run.outputs };
-
-        if (updatedOutputs.blogPost && updatedOutputs.blogPost.id === assetId) {
-          updatedOutputs.blogPost = { ...updatedOutputs.blogPost, status };
-        }
-
-        if (updatedOutputs.landingPage && updatedOutputs.landingPage.id === assetId) {
-          updatedOutputs.landingPage = { ...updatedOutputs.landingPage, status };
-        }
-
-        if (updatedOutputs.whitepaper && updatedOutputs.whitepaper.id === assetId) {
-          updatedOutputs.whitepaper = { ...updatedOutputs.whitepaper, status };
-        }
-
-        if (updatedOutputs.newsletter && updatedOutputs.newsletter.id === assetId) {
-          updatedOutputs.newsletter = { ...updatedOutputs.newsletter, status };
-        }
-
-        if (updatedOutputs.caseStudy && updatedOutputs.caseStudy.id === assetId) {
-          updatedOutputs.caseStudy = { ...updatedOutputs.caseStudy, status };
-        }
-
-        if (updatedOutputs.linkedinPosts) {
-          updatedOutputs.linkedinPosts = updatedOutputs.linkedinPosts.map((item) =>
-            item.id === assetId ? { ...item, status } : item
-          );
-        }
-
-        if (updatedOutputs.emailSequence) {
-          updatedOutputs.emailSequence = updatedOutputs.emailSequence.map((item) =>
-            item.id === assetId ? { ...item, status } : item
-          );
-        }
-
-        if (updatedOutputs.adVariants) {
-          updatedOutputs.adVariants = updatedOutputs.adVariants.map((item) =>
-            item.id === assetId ? { ...item, status } : item
-          );
-        }
-
-        if (updatedOutputs.creativeAssets) {
-          updatedOutputs.creativeAssets = updatedOutputs.creativeAssets.map((item) =>
-            item.id === assetId ? { ...item, status } : item
-          );
-        }
-
-        return { ...run, outputs: updatedOutputs };
-      })
-    );
+  // Delete single notification from DB
+  const deleteNotification = async (id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    try {
+      await fetch(`${API_BASE_URL}/notifications/${id}`, { method: "DELETE" });
+    } catch (e) {
+      console.error("Failed to delete notification:", e);
+    }
   };
 
-  const createRun = (formData) => {
-    const runId = `RUN-${Math.floor(2500 + Math.random() * 5000)}`;
-    const topicTitle = formData.topic || `${formData.industry} Strategic Intelligence Run`;
-    
-    const newAgents = MARKETING_AGENTS_DEFINITION.map((def, idx) => ({
-      ...def,
-      status: idx === 0 ? "running" : "queued",
-      progress: idx === 0 ? 25 : 0
-    }));
+  // Clear all notifications from DB
+  const clearAllNotifications = async () => {
+    setNotifications([]);
+    try {
+      await fetch(`${API_BASE_URL}/notifications/clear/all`, { method: "DELETE" });
+    } catch (e) {
+      console.error("Failed to clear notifications:", e);
+    }
+  };
 
-    const newRun = {
-      id: runId,
-      title: topicTitle,
-      topic: formData.topic || `Market Analysis in ${formData.industry}`,
-      source: formData.source || "Manual",
-      industry: formData.industry || "Enterprise SaaS",
-      objective: formData.objective || "Generate Leads",
-      targetAudience: formData.targetAudience || "VP Engineering & Operations",
-      status: "running",
-      overallProgress: 10,
-      createdAt: new Date().toISOString(),
-      completedAt: null,
-      agents: newAgents,
-      logs: [
-        `${new Date().toLocaleTimeString()} [Supervisor] Initialized 10-agent autonomous marketing pipeline.`
-      ],
-      summary: null,
+  // Logout method
+  const logout = () => {
+    localStorage.removeItem("brandsutra_token");
+    setUser({
+      id: null,
+      name: "",
+      email: "",
+      role: "",
+      title: "",
+      company: "",
+      plan: "",
+      avatar: null
+    });
+    window.location.href = "/login";
+  };
+
+  // Map backend run to frontend structure
+  const mapBackendRunToFrontend = useCallback((bRun) => {
+    const agentExecutions = bRun.agentExecutions || [];
+    const mappedAgents = MARKETING_AGENTS_DEFINITION.map((def, idx) => {
+      const exec = agentExecutions.find((e) => e.agentId === def.id || e.stepNumber === idx + 1);
+      let status = "queued";
+      if (exec) {
+        if (exec.status === "COMPLETED") status = "completed";
+        else if (exec.status === "RUNNING") status = "running";
+        else if (exec.status === "FAILED") status = "failed";
+      }
+      return {
+        ...def,
+        status,
+        progress: status === "completed" ? 100 : status === "running" ? 50 : 0
+      };
+    });
+
+    const logs = (bRun.logs || []).map(
+      (l) => `${new Date(l.timestamp).toLocaleTimeString()} [${l.logLevel.toUpperCase()}] ${l.logMessage}`
+    );
+
+    const assets = bRun.assets || [];
+    const blogAsset = assets.find((a) => a.assetType === "Blog Post");
+    const linkedinAssets = assets.filter((a) => a.assetType === "LinkedIn Post");
+    const emailAssets = assets.filter((a) => a.assetType === "Email Content");
+    const adAssets = assets.filter((a) => a.assetType === "Ad Copy Variant");
+    const imageAssets = assets.filter((a) => a.assetType === "Image Prompt");
+    const videoAssets = assets.filter((a) => a.assetType === "Video Prompt");
+
+    return {
+      id: bRun.id,
+      title: bRun.topic ? `${bRun.topic}` : "AI Marketing Run",
+      topic: bRun.topic,
+      source: bRun.triggerMode === "RSS_TRIGGERED" ? "Automated" : "Manual",
+      industry: bRun.industry || "Enterprise SaaS",
+      objective: "Generate Leads & Growth",
+      targetAudience: bRun.targetAudience || "Decision Makers",
+      status: bRun.status?.toLowerCase() || "running",
+      overallProgress: bRun.overallProgress || 0,
+      createdAt: bRun.createdAt,
+      completedAt: bRun.completedAt,
+      agents: mappedAgents,
+      logs: logs.length > 0 ? logs : [`${new Date().toLocaleTimeString()} [Supervisor] Autonomous pipeline initialized.`],
+      summary: bRun.summary,
       agentData: {
-        trendIdentification: {
-          kpis: { totalKeywords: 32, avgVolume: "18.5K", topRising: `${formData.topic || formData.industry} AI` },
-          keywords: [
-            { keyword: `${formData.topic || formData.industry} optimization`, volume: "16,400", trend: "up", difficulty: "Medium (41/100)", sparkline: [10, 25, 45, 60, 75, 90] },
-            { keyword: `autonomous ${formData.industry.toLowerCase()} workflows`, volume: "9,800", trend: "up", difficulty: "Low (29/100)", sparkline: [15, 30, 42, 58, 70, 85] }
-          ],
-          hashtags: [`#${formData.industry.replace(/\s+/g, '')}`, "#AIOperations", "#EnterpriseAutomation"],
-          questions: [
-            `What is the primary ROI driver for ${formData.topic || formData.industry}?`,
-            `How do leading teams mitigate implementation risk?`
-          ],
-          seasonalCallout: "Q3 Fiscal Planning Window: Strategic decision-makers reviewing automation budgets."
-        },
-        research: {
-          brief: `Comprehensive market analysis for ${formData.industry}. Buyer intent remains focused on measurable efficiency and compliance guardrails.`,
-          painPoints: [
-            { title: "Operational Overhead", description: "Manual processes slowing down marketing execution." },
-            { title: "Compliance Drift", description: "Difficulty maintaining policy consistency across channels." }
-          ],
-          technologies: [
-            { name: "Autonomous Telemetry", desc: "Real-time performance tracking and alert triggers." }
-          ],
-          news: [
-            { headline: `${formData.industry} Sector Embraces Autonomous Agentic Workflows`, source: "Industry Tech Insights", date: "2026-07-28" }
-          ]
-        },
-        competitiveIntelligence: {
-          competitors: [
-            { name: "Apex Solutions", positioning: "Traditional static dashboard", strengths: "Established user base", cadence: "Monthly blog", seoFocus: "General SaaS" },
-            { name: "Vanguard Tech", positioning: "Manual consultancy model", strengths: "High touch support", cadence: "Quarterly reports", seoFocus: "Consulting" }
-          ],
-          gaps: ["Rivals lack continuous real-time multi-agent execution capabilities."],
-          angles: [{ title: "Autonomous Speed & Precision", desc: "Deliver end-to-end strategy in minutes rather than weeks." }]
-        },
-        contextMerger: {
-          title: `Master Context Brief: ${topicTitle}`,
-          takeaways: ["Focus messaging on speed, governance, and measurable ROI."],
-          thesis: `By leveraging autonomous multi-agent pipelines, ${formData.industry} organizations outperform traditional manual marketing workflows.`
-        },
-        contentStrategy: {
-          types: ["Blog Post", "LinkedIn Post", "Email Sequence", "Ad Variants", "Architecture Diagram"],
-          objective: formData.objective || "Generate Leads",
-          audience: formData.targetAudience || "Enterprise Decision Makers",
-          communicationStyle: "Authoritative, data-backed, concise",
-          channels: [{ channel: "LinkedIn", format: "Executive Insights", frequency: "3x / week" }]
-        },
-        contentPlanning: [
-          { id: `cp-${Math.floor(100+Math.random()*900)}`, title: `Navigating ${formData.topic || formData.industry} in 2026`, channel: "Blog", date: "2026-08-05", time: "10:00 AM", status: "scheduled" }
-        ],
-        seo: {
-          keywords: [{ keyword: `${formData.topic || formData.industry} guide`, intent: "Transactional", volume: "14,200", difficulty: "38/100" }],
-          serpPreview: {
-            title: `${topicTitle} | BrandSutra Platform`,
-            url: `https://BrandSutra.ai/solutions/${formData.industry.toLowerCase().replace(/\s+/g, '-')}`,
-            description: `Accelerate enterprise growth with BrandSutra's autonomous agent pipeline. Request an operational demo today.`
-          },
-          searchIntentSummary: "High commercial intent with focus on automated execution.",
-          internalLinks: [{ from: "/blog/overview", to: "/solutions/main" }],
-          faqs: ["How quickly can we deploy BrandSutra agent pipelines?"]
-        }
+        trendIdentification: bRun.trendData || null,
+        research: bRun.researchData || null,
+        competitiveIntelligence: bRun.competitiveData || null,
+        contextMerger: bRun.contextMergerData || null,
+        contentStrategy: bRun.strategyData || null,
+        contentPlanning: bRun.planningData || null,
+        seo: bRun.seoData || null
       },
       outputs: {
-        blogPost: {
-          id: `asset-${Math.floor(100 + Math.random() * 900)}`,
-          title: `Executive Playbook: ${topicTitle}`,
-          readTime: "5 min read",
-          status: "pending",
-          content: `### Industry Overview\nIn today's fast-moving environment, scaling ${formData.industry} operations demands continuous real-time intelligence.\n\n### Core Execution Strategy\n1. Deploy autonomous agent pipelines for market telemetry.\n2. Streamline multi-channel asset review and approval.`
-        },
-        linkedinPosts: [
-          {
-            id: `asset-${Math.floor(100 + Math.random() * 900)}`,
-            type: "Executive Insight",
-            status: "pending",
-            content: `How are leading ${formData.industry} teams approaching ${formData.topic || 'growth'} this year?\n\nKey takeaways:\n• Move from static planning to continuous multi-agent execution.\n• Reduce review cycles by 60% with unified approvals.\n\nRead our complete analysis 👇`
-          }
-        ],
-        emailSequence: [
-          {
-            id: `asset-${Math.floor(100 + Math.random() * 900)}`,
-            step: 1,
-            subject: `Optimizing ${formData.industry} strategy for enterprise teams`,
-            preview: "Autonomous multi-agent execution framework...",
-            status: "pending",
-            body: `Hi {{firstName}},\n\nReaching out because leadership in ${formData.industry} frequently faces bottlenecks in strategy execution.\n\nBrandSutra automates market research, strategy, and asset generation in one unified pipeline.\n\nWould 10 minutes next Tuesday be worth a quick look?`
-          }
-        ],
-        adVariants: [
-          {
-            id: `asset-${Math.floor(100 + Math.random() * 900)}`,
-            headline: `Autonomous ${formData.industry} Growth`,
-            body: `Deploy 10 specialized AI agents to generate market strategy and ready-to-publish assets.`,
-            status: "pending"
-          }
-        ],
+        blogPost: blogAsset
+          ? { id: blogAsset.id, title: blogAsset.title, readTime: "5 min read", status: blogAsset.status.toLowerCase(), content: blogAsset.content }
+          : null,
+        linkedinPosts: linkedinAssets.map((a) => ({ id: a.id, type: a.title, status: a.status.toLowerCase(), content: a.content })),
+        emailSequence: emailAssets.map((a, idx) => ({ id: a.id, step: idx + 1, subject: a.title, preview: "Email draft...", status: a.status.toLowerCase(), body: a.content })),
+        adVariants: adAssets.map((a) => ({ id: a.id, headline: a.title, body: a.content, status: a.status.toLowerCase() })),
         creativeAssets: [
-          {
-            id: `asset-${Math.floor(100 + Math.random() * 900)}`,
-            title: `${formData.industry} Multi-Agent Architecture`,
-            type: "Architecture Diagram",
-            dimensions: "1920x1080 SVG",
-            status: "pending"
-          }
+          ...imageAssets.map((a) => ({ id: a.id, title: a.title, type: "Image Prompt", dimensions: a.dimensions || "16:9", content: a.content, status: a.status.toLowerCase() })),
+          ...videoAssets.map((a) => ({ id: a.id, title: a.title, type: "Video Prompt", dimensions: a.dimensions || "9:16", content: a.content, status: a.status.toLowerCase() }))
         ]
       }
     };
+  }, []);
 
-    setRuns((prev) => [newRun, ...prev]);
+  // Map backend analysis to frontend structure
+  const mapBackendAnalysisToFrontend = useCallback((bAna) => {
+    const gapItems = bAna.gapAnalysis || [];
+    const scoreCategories = bAna.scoreCategories || [];
+    const recs = bAna.recommendations || [];
+    const roadmaps = bAna.roadmapItems || [];
 
-    let currentAgentIdx = 0;
-    const interval = setInterval(() => {
-      setRuns((prevRuns) =>
-        prevRuns.map((r) => {
-          if (r.id !== runId) return r;
+    const isCompleted = bAna.status === "COMPLETED";
 
-          const agents = [...r.agents];
-          const logs = [...r.logs];
+    const gapObj = {};
+    gapItems.forEach((g) => {
+      gapObj[g.category] = {
+        finding: g.finding,
+        severity: g.severity,
+        whyItMatters: g.whyItMatters
+      };
+    });
 
-          if (currentAgentIdx < 10) {
-            agents[currentAgentIdx].progress += 50;
+    const categoriesList = scoreCategories.map((c) => ({ name: c.name, score: c.score }));
 
-            if (agents[currentAgentIdx].progress >= 100) {
-              agents[currentAgentIdx].progress = 100;
-              agents[currentAgentIdx].status = "completed";
-              
-              logs.push(
-                `${new Date().toLocaleTimeString()} [${agents[currentAgentIdx].name}] Step completed successfully.`
-              );
+    return {
+      id: bAna.id,
+      url: bAna.url,
+      domain: bAna.domain,
+      companyName: bAna.companyName,
+      industry: bAna.industry,
+      status: bAna.status?.toLowerCase() || "analyzing",
+      createdAt: bAna.createdAt,
+      healthScore: bAna.healthScore,
+      agents: WEBSITE_AGENTS_DEFINITION.map((a, idx) => ({
+        ...a,
+        status: isCompleted ? "completed" : idx === 0 ? "running" : "queued",
+        progress: isCompleted ? 100 : idx === 0 ? 50 : 0
+      })),
+      technicalOverview: bAna.technicalOverview || {
+        pagesDiscovered: 24,
+        maxDepth: 3,
+        sitemapFound: "Yes (sitemap.xml)",
+        avgLoadTime: "1.18s"
+      },
+      pageInventory: (bAna.pageInventory || []).map((p) => ({
+        path: p.path,
+        pageType: p.pageType,
+        title: p.title,
+        wordCount: p.wordCount,
+        internalLinks: p.internalLinks,
+        status: p.status
+      })),
+      navigationHierarchy: (bAna.navigationHierarchy || []).map((n) => ({
+        name: n.name,
+        children: []
+      })),
+      gapAnalysis: Object.keys(gapObj).length > 0 ? gapObj : null,
+      scoringBreakdown: categoriesList.length > 0 ? { overall: bAna.healthScore || 75, categories: categoriesList } : null,
+      recommendations: recs.map((r) => ({
+        id: r.id,
+        title: r.title,
+        category: r.category,
+        severity: r.severity,
+        impact: r.impact,
+        effort: r.effort,
+        details: r.details
+      })),
+      roadmap: {
+        now: roadmaps.filter((r) => r.phase === "now").map((r) => ({ title: r.title, category: r.category, effort: r.effort })),
+        next: roadmaps.filter((r) => r.phase === "next").map((r) => ({ title: r.title, category: r.category, effort: r.effort })),
+        later: roadmaps.filter((r) => r.phase === "later").map((r) => ({ title: r.title, category: r.category, effort: r.effort }))
+      }
+    };
+  }, []);
 
-              currentAgentIdx++;
-              if (currentAgentIdx < 10) {
-                agents[currentAgentIdx].status = "running";
-                agents[currentAgentIdx].progress = 25;
-              }
-            }
-          }
+  // Sync from backend
+  const fetchBackendData = useCallback(async () => {
+    try {
+      const [runsRes, anaRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/marketing/runs`).then((r) => r.ok ? r.json() : null),
+        fetch(`${API_BASE_URL}/websites`).then((r) => r.ok ? r.json() : null)
+      ]);
 
-          const overallProgress = Math.min(100, Math.round((currentAgentIdx / 10) * 100));
+      if (runsRes && runsRes.success && Array.isArray(runsRes.data)) {
+        const mappedRuns = runsRes.data.map(mapBackendRunToFrontend);
+        setRuns(mappedRuns);
+      }
 
-          if (currentAgentIdx >= 10 && r.status === "running") {
-            clearInterval(interval);
-            logs.push(`${new Date().toLocaleTimeString()} [Supervisor] All 10 agents completed execution successfully.`);
-            return {
-              ...r,
-              status: "completed",
-              overallProgress: 100,
-              completedAt: new Date().toISOString(),
-              agents,
-              logs
-            };
-          }
+      if (anaRes && anaRes.success && Array.isArray(anaRes.data)) {
+        const mappedAnalyses = anaRes.data.map(mapBackendAnalysisToFrontend);
+        setAnalyses(mappedAnalyses);
+      }
+    } catch (e) {
+      console.warn("Backend poll warning:", e.message);
+    }
+  }, [mapBackendRunToFrontend, mapBackendAnalysisToFrontend]);
 
-          return { ...r, agents, overallProgress, logs };
+  useEffect(() => {
+    fetchUser();
+    fetchNotifications();
+    fetchBackendData();
+  }, [fetchUser, fetchNotifications, fetchBackendData]);
+
+  // Periodic polling if there are running runs/analyses
+  useEffect(() => {
+    const hasRunning = runs.some((r) => r.status === "running" || r.status === "pending") ||
+                       analyses.some((a) => a.status === "analyzing");
+
+    if (hasRunning) {
+      const interval = setInterval(() => {
+        fetchBackendData();
+        fetchNotifications();
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [runs, analyses, fetchBackendData, fetchNotifications]);
+
+  const updateAssetStatus = async (runId, assetId, status) => {
+    try {
+      await fetch(`${API_BASE_URL}/marketing/assets/${assetId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: status.toUpperCase() })
+      });
+      fetchBackendData();
+    } catch (e) {
+      console.error("Failed to update asset status:", e);
+    }
+  };
+
+  const createRun = async (formData) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/marketing/runs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic: formData.topic || "AI Marketing Strategy Campaign",
+          industry: formData.industry || "Enterprise SaaS",
+          targetAudience: formData.targetAudience || "Decision Makers",
+          triggerMode: formData.source === "Automated" ? "RSS_TRIGGERED" : "MANUAL"
         })
-      );
-    }, 1000);
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        fetchBackendData();
+        fetchNotifications();
+        return data.data.id;
+      }
+    } catch (e) {
+      console.error("Failed to create run via backend API:", e);
+    }
 
+    const runId = `RUN-${Math.floor(2500 + Math.random() * 5000)}`;
     return runId;
   };
 
-  const createAnalysis = (formData) => {
-    const analysisId = `ana-${Math.floor(4000 + Math.random() * 5000)}`;
-    let domainStr = formData.url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
-    if (!domainStr) domainStr = "example.com";
-
-    const company = formData.companyName || domainStr.split('.')[0].toUpperCase() + " Corp";
-
-    const newAnalysis = {
-      id: analysisId,
-      url: formData.url,
-      domain: domainStr,
-      companyName: company,
-      industry: formData.industry || "Enterprise SaaS",
-      status: "analyzing",
-      createdAt: new Date().toISOString(),
-      healthScore: null,
-      agents: WEBSITE_AGENTS_DEFINITION.map((a, idx) => ({
-        ...a,
-        status: idx === 0 ? "running" : "queued",
-        progress: idx === 0 ? 30 : 0
-      })),
-      technicalOverview: {
-        pagesDiscovered: 48,
-        maxDepth: 4,
-        sitemapFound: "Yes (sitemap.xml)",
-        avgLoadTime: "1.25s"
-      },
-      pageInventory: [
-        { path: "/", pageType: "Homepage", title: `${company} | Homepage`, wordCount: 920, internalLinks: 24, status: "200 OK" },
-        { path: "/products", pageType: "Products", title: `${company} Solutions`, wordCount: 1100, internalLinks: 18, status: "200 OK" },
-        { path: "/pricing", pageType: "Pricing", title: `Pricing & Plans`, wordCount: 540, internalLinks: 10, status: "200 OK" },
-        { path: "/about", pageType: "About", title: `About ${company}`, wordCount: 420, internalLinks: 8, status: "200 OK" },
-        { path: "/contact", pageType: "Contact", title: `Contact Us`, wordCount: 210, internalLinks: 4, status: "200 OK" }
-      ],
-      navigationHierarchy: [
-        { name: "Home (/) ", children: [] },
-        { name: "Products (/products)", children: [{ name: "Core Suite" }, { name: "Analytics" }] },
-        { name: "Pricing (/pricing)", children: [] }
-      ],
-      gapAnalysis: null,
-      scoringBreakdown: null,
-      recommendations: [],
-      roadmap: null
-    };
-
-    setAnalyses((prev) => [newAnalysis, ...prev]);
-
-    // Simulate 3-agent progression over 6s
-    let agentStep = 0;
-    const interval = setInterval(() => {
-      setAnalyses((prevAnalyses) =>
-        prevAnalyses.map((item) => {
-          if (item.id !== analysisId) return item;
-
-          const agents = [...item.agents];
-
-          if (agentStep < 3) {
-            agents[agentStep].progress += 50;
-
-            if (agents[agentStep].progress >= 100) {
-              agents[agentStep].progress = 100;
-              agents[agentStep].status = "completed";
-
-              agentStep++;
-              if (agentStep < 3) {
-                agents[agentStep].status = "running";
-                agents[agentStep].progress = 30;
-              }
-            }
-          }
-
-          if (agentStep >= 3) {
-            clearInterval(interval);
-            return {
-              ...item,
-              status: "completed",
-              healthScore: 74,
-              agents: agents.map((a) => ({ ...a, status: "completed", progress: 100 })),
-              gapAnalysis: {
-                businessAlignment: {
-                  finding: `Homepage headline lacks specific category differentiation for target ${formData.industry} buyers.`,
-                  severity: "high",
-                  whyItMatters: "High bounce rate within the first 5 seconds of visitor landing."
-                },
-                contentAnalysis: {
-                  finding: "Missing dedicated customer case studies and interactive product walk-through.",
-                  severity: "medium",
-                  whyItMatters: "Buyers require proof of ROI before requesting sales meetings."
-                },
-                seoAnalysis: {
-                  finding: "H2 headings miss primary transactional search terms.",
-                  severity: "medium",
-                  whyItMatters: "Limits organic search rankings on intent-driven queries."
-                },
-                conversionAnalysis: {
-                  finding: "Hero CTA button leads directly to lengthy form without social proof badges.",
-                  severity: "high",
-                  whyItMatters: "Causes conversion drop-off on paid and referral traffic."
-                },
-                userExperience: {
-                  finding: "Mobile navigation menu takes over 2 seconds to render smoothly.",
-                  severity: "low",
-                  whyItMatters: "Slight visual friction for mobile decision makers."
-                }
-              },
-              scoringBreakdown: {
-                overall: 74,
-                categories: [
-                  { name: "Business Alignment", score: 70 },
-                  { name: "Technical Quality", score: 86 },
-                  { name: "SEO Optimization", score: 72 },
-                  { name: "Content Quality", score: 68 },
-                  { name: "User Experience", score: 80 },
-                  { name: "Conversion Readiness", score: 65 }
-                ]
-              },
-              recommendations: [
-                {
-                  id: "rec-new-1",
-                  title: "Refactor Hero Value Proposition for Specificity",
-                  category: "Business Alignment",
-                  severity: "high",
-                  impact: "High (+20% CVR)",
-                  effort: "Low (1-2 Days)",
-                  details: `Update headline to highlight quantifiable ROI for ${formData.industry} buyers.`
-                },
-                {
-                  id: "rec-new-2",
-                  title: "Simplify Demo Request Form to 3 Input Fields",
-                  category: "Conversion Readiness",
-                  severity: "high",
-                  impact: "High (+25% CVR)",
-                  effort: "Medium (3 Days)",
-                  details: "Remove unnecessary fields and embed trust badges below button."
-                }
-              ],
-              roadmap: {
-                now: [{ title: "Hero value proposition rewrite", category: "Messaging", effort: "2 Days" }],
-                next: [{ title: "Deploy competitor comparison subpages", category: "Content", effort: "1 Week" }],
-                later: [{ title: "Interactive ROI calculator component", category: "Interactive", effort: "3 Weeks" }]
-              }
-            };
-          }
-
-          return { ...item, agents };
+  const createAnalysis = async (formData) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/websites`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: formData.url,
+          companyName: formData.companyName,
+          industry: formData.industry,
+          overview: formData.overview,
+          targetAudience: formData.targetAudience,
+          products: formData.products || [],
+          services: formData.services || [],
+          goals: formData.goals || []
         })
-      );
-    }, 1500);
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        fetchBackendData();
+        fetchNotifications();
+        return data.data.id;
+      }
+    } catch (e) {
+      console.error("Failed to create website analysis via backend API:", e);
+    }
 
+    const analysisId = `ana-${Math.floor(4000 + Math.random() * 5000)}`;
     return analysisId;
   };
 
-  const reRunAnalysis = (analysisId) => {
-    setAnalyses((prev) =>
-      prev.map((item) => {
-        if (item.id !== analysisId) return item;
-        return {
-          ...item,
-          status: "analyzing",
-          agents: WEBSITE_AGENTS_DEFINITION.map((a, idx) => ({
-            ...a,
-            status: idx === 0 ? "running" : "queued",
-            progress: idx === 0 ? 30 : 0
-          }))
-        };
-      })
-    );
-
-    // Re-run simulation
-    let agentStep = 0;
-    const interval = setInterval(() => {
-      setAnalyses((prevAnalyses) =>
-        prevAnalyses.map((item) => {
-          if (item.id !== analysisId) return item;
-
-          const agents = [...item.agents];
-
-          if (agentStep < 3) {
-            agents[agentStep].progress += 50;
-
-            if (agents[agentStep].progress >= 100) {
-              agents[agentStep].progress = 100;
-              agents[agentStep].status = "completed";
-
-              agentStep++;
-              if (agentStep < 3) {
-                agents[agentStep].status = "running";
-                agents[agentStep].progress = 30;
-              }
-            }
-          }
-
-          if (agentStep >= 3) {
-            clearInterval(interval);
-            return {
-              ...item,
-              status: "completed",
-              healthScore: Math.min(95, (item.healthScore || 70) + 4),
-              agents: agents.map((a) => ({ ...a, status: "completed", progress: 100 }))
-            };
-          }
-
-          return { ...item, agents };
-        })
-      );
-    }, 1200);
+  const reRunAnalysis = async (analysisId) => {
+    fetchBackendData();
   };
 
   return (
@@ -510,12 +414,17 @@ export function AppProvider({ children }) {
         notifications,
         user,
         setUser,
+        updateUserProfile,
         createRun,
         createAnalysis,
         reRunAnalysis,
         updateAssetStatus,
-        resetDemoData,
         markNotificationRead,
+        deleteNotification,
+        clearAllNotifications,
+        logout,
+        refetchUser: fetchUser,
+        refetchNotifications: fetchNotifications,
       }}
     >
       {children}

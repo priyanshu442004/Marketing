@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const marketingRoutes = require('./routes/marketingRoutes');
 const rssRoutes = require('./routes/rssRoutes');
 const websiteRoutes = require('./routes/websiteRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/marketing', marketingRoutes);
 app.use('/api/rss', rssRoutes);
 app.use('/api/websites', websiteRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

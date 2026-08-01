@@ -1,4 +1,5 @@
 const prisma = require('../utils/prismaClient');
+const websiteOrchestrator = require('../services/websiteOrchestrator');
 
 const websiteController = {
   // Get all website analyses
@@ -55,10 +56,16 @@ const websiteController = {
       const { url, companyName, overview, industry, targetAudience, products, services, goals, userId } = req.body;
 
       const analysisId = `ana-${Date.now()}`;
-      const defaultUserId = userId || (await prisma.user.findFirst())?.id;
+      let defaultUserId = userId || (await prisma.user.findFirst())?.id;
 
       if (!defaultUserId) {
-        return res.status(400).json({ success: false, message: 'No user ID available for analysis creation' });
+        const newUser = await prisma.user.create({
+          data: {
+            email: `user_${Date.now()}@brandsutra.ai`,
+            name: 'Marketing Lead',
+          }
+        });
+        defaultUserId = newUser.id;
       }
 
       const domain = url ? url.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : 'example.com';
@@ -77,26 +84,17 @@ const websiteController = {
           services: services || [],
           goals: goals || ['Increase Conversion', 'SEO Growth'],
           status: 'ANALYZING',
-          healthScore: 0,
-          technicalOverview: {
-            create: {
-              pagesDiscovered: 12,
-              maxDepth: 3,
-              sitemapFound: 'Yes (sitemap.xml)',
-              avgLoadTime: '1.2s',
-            },
-          },
-          pageInventory: {
-            create: [
-              { path: '/', pageType: 'Homepage', title: `${companyName || domain} | Home`, wordCount: 850, internalLinks: 24, status: '200 OK' },
-              { path: '/pricing', pageType: 'Pricing', title: `Pricing & Plans`, wordCount: 520, internalLinks: 12, status: '200 OK' },
-            ],
-          },
+          healthScore: null,
         },
         include: {
           technicalOverview: true,
           pageInventory: true,
         },
+      });
+
+      // Trigger website audit asynchronously with DeepSeek
+      websiteOrchestrator.runWebsiteAuditPipeline(newAnalysis.id).catch((err) => {
+        console.error(`Error in async website audit for ${newAnalysis.id}:`, err);
       });
 
       return res.status(201).json({ success: true, data: newAnalysis });

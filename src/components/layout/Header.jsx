@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { Search, Bell, Check, Sparkles, ExternalLink, Moon, Sun } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Search, Bell, Check, ExternalLink, Moon, Sun, Trash2, LogOut, User, Settings as SettingsIcon } from "lucide-react";
 import { Breadcrumb } from "../ui/Breadcrumb";
 import { Avatar } from "../ui/Avatar";
 import { useAppStore } from "../../store/AppStore";
@@ -8,8 +8,10 @@ import { cn } from "../../lib/utils";
 
 export function Header() {
   const location = useLocation();
-  const { notifications, markNotificationRead, user } = useAppStore();
+  const navigate = useNavigate();
+  const { notifications, markNotificationRead, deleteNotification, clearAllNotifications, user, logout } = useAppStore();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [theme, setTheme] = useState(() => {
     if (typeof window !== "undefined") {
       const storedTheme = window.localStorage.getItem("brandsutra-theme");
@@ -18,7 +20,9 @@ export function Header() {
     }
     return "light";
   });
+
   const notifRef = useRef(null);
+  const userMenuRef = useRef(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -26,6 +30,9 @@ export function Header() {
     function handleClickOutside(e) {
       if (notifRef.current && !notifRef.current.contains(e.target)) {
         setShowNotifications(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setShowUserMenu(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -64,9 +71,9 @@ export function Header() {
       {/* Left Breadcrumb */}
       <Breadcrumb items={getBreadcrumbs()} />
 
-      {/* Right Actions (Global Search, Notifications Bell, Avatar Menu) */}
+      {/* Right Actions */}
       <div className="flex items-center gap-3">
-        {/* Mock Global Search (⌘K) */}
+        {/* Global Search */}
         <div className="relative hidden sm:block">
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-subtle" />
           <input
@@ -79,6 +86,7 @@ export function Header() {
           </kbd>
         </div>
 
+        {/* Theme Toggle */}
         <button
           type="button"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -103,31 +111,83 @@ export function Header() {
 
           {/* Notifications Popover */}
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 bg-surface rounded-card border border-border shadow-modal z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute right-0 mt-2 w-88 bg-surface rounded-card border border-border shadow-modal z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
               <div className="p-3 border-b border-border flex items-center justify-between bg-raise">
-                <span className="text-xs font-semibold text-ink">Notifications</span>
-                <span className="text-[11px] font-mono text-ink-subtle">
-                  {unreadCount} unread
-                </span>
-              </div>
-              <div className="divide-y divide-border max-h-64 overflow-y-auto">
-                {notifications.map((n) => (
-                  <div
-                    key={n.id}
-                    onClick={() => markNotificationRead(n.id)}
-                    className={cn(
-                      "p-3 text-xs cursor-pointer hover:bg-raise/80 transition-colors flex items-start gap-2.5",
-                      !n.read ? "bg-accent-tint/30" : ""
-                    )}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-ink">Notifications</span>
+                  {unreadCount > 0 && (
+                    <span className="text-[10px] bg-accent/10 text-accent font-mono font-bold px-1.5 py-0.5 rounded-full">
+                      {unreadCount} unread
+                    </span>
+                  )}
+                </div>
+                {notifications.length > 0 && (
+                  <button
+                    onClick={() => clearAllNotifications()}
+                    className="text-[10px] text-ink-subtle hover:text-danger font-mono transition-colors"
                   >
-                    <div className="w-1.5 h-1.5 rounded-full bg-accent mt-1 shrink-0 opacity-80" />
-                    <div className="flex-1 space-y-0.5">
-                      <p className="font-semibold text-ink leading-tight">{n.title}</p>
-                      <p className="text-ink-muted text-[11px] leading-relaxed">{n.message}</p>
-                      <p className="text-[10px] text-ink-subtle font-mono pt-1">{n.time}</p>
-                    </div>
+                    Clear All
+                  </button>
+                )}
+              </div>
+
+              <div className="divide-y divide-border max-h-72 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-ink-muted font-mono">
+                    No notifications yet
                   </div>
-                ))}
+                ) : (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className={cn(
+                        "p-3 text-xs flex items-start justify-between gap-2 transition-colors",
+                        !n.read ? "bg-accent-tint/30" : "hover:bg-raise/80"
+                      )}
+                    >
+                      <div
+                        className="flex-1 cursor-pointer space-y-0.5"
+                        onClick={() => {
+                          markNotificationRead(n.id, true);
+                          if (n.link) navigate(n.link);
+                        }}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={cn(
+                              "w-1.5 h-1.5 rounded-full shrink-0",
+                              n.type === "success"
+                                ? "bg-emerald-500"
+                                : n.type === "error"
+                                ? "bg-rose-500"
+                                : "bg-accent"
+                            )}
+                          />
+                          <p className="font-semibold text-ink leading-tight">{n.title}</p>
+                        </div>
+                        <p className="text-ink-muted text-[11px] leading-relaxed pl-3">{n.message}</p>
+                        <p className="text-[10px] text-ink-subtle font-mono pt-0.5 pl-3">{n.time}</p>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0 pt-0.5">
+                        <button
+                          onClick={() => markNotificationRead(n.id, !n.read)}
+                          title={n.read ? "Mark as unread" : "Mark as read"}
+                          className="p-1 text-ink-subtle hover:text-accent rounded"
+                        >
+                          <Check className={cn("w-3.5 h-3.5", n.read ? "opacity-30" : "opacity-100 text-accent")} />
+                        </button>
+                        <button
+                          onClick={() => deleteNotification(n.id)}
+                          title="Delete notification"
+                          className="p-1 text-ink-subtle hover:text-danger rounded"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -135,12 +195,53 @@ export function Header() {
 
         <div className="h-4 w-px bg-border mx-1" />
 
-        {/* User Chip */}
-        <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
-          <Avatar name={user.name} size="sm" />
-          <span className="text-xs font-medium text-ink hidden md:inline-block">
-            {user.name}
-          </span>
+        {/* User Dropdown Menu */}
+        <div className="relative" ref={userMenuRef}>
+          <button
+            onClick={() => setShowUserMenu(!showUserMenu)}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity focus-visible:outline-none"
+          >
+            <Avatar name={user.name || "Operator"} size="sm" />
+            <span className="text-xs font-medium text-ink hidden md:inline-block">
+              {user.name || "Operator"}
+            </span>
+          </button>
+
+          {showUserMenu && (
+            <div className="absolute right-0 mt-2 w-56 bg-surface rounded-card border border-border shadow-modal z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 divide-y divide-border">
+              <div className="p-3 bg-raise">
+                <p className="text-xs font-bold text-ink">{user.name || "Operator"}</p>
+                <p className="text-[11px] font-mono text-ink-subtle truncate">{user.email}</p>
+                <p className="text-[10px] text-accent font-semibold pt-1">{user.company || "Enterprise Suite"}</p>
+              </div>
+
+              <div className="py-1 text-xs">
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    navigate("/app/settings");
+                  }}
+                  className="w-full text-left px-3 py-2 text-ink hover:bg-raise flex items-center gap-2"
+                >
+                  <SettingsIcon className="w-3.5 h-3.5 text-ink-muted" />
+                  Account Settings
+                </button>
+              </div>
+
+              <div className="py-1 text-xs">
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    logout();
+                  }}
+                  className="w-full text-left px-3 py-2 text-danger hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2 font-medium"
+                >
+                  <LogOut className="w-3.5 h-3.5 text-danger" />
+                  Log Out
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
