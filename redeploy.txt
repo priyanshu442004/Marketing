@@ -1,0 +1,16 @@
+cd /var/www/Marketing
+git checkout main
+git pull origin main
+
+# Rebuild Frontend SPA
+npm install
+npm run build
+
+# Update Backend & Restart API Process
+cd backend
+npm install
+npx prisma db push
+pm2 restart aimarketing-api
+
+# Reload Web Server
+sudo systemctl reload nginx
