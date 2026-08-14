@@ -1,4 +1,7 @@
 cd /var/www/Marketing
+
+# Reset or stash any local uncommitted changes on EC2 server (e.g. package-lock.json or temporary config edits)
+git stash
 git checkout main
 git pull origin main
 
@@ -14,3 +17,4 @@ pm2 restart aimarketing-api
 
 # Reload Web Server
 sudo systemctl reload nginx
+

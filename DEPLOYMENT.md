@@ -94,19 +94,11 @@ npx prisma db push
 ```
 
 ### 4.2 Frontend Setup (`/var/www/Marketing`)
-Update `src/config.js` to point to relative `/api` paths:
-```bash
-cd /var/www/Marketing
-nano src/config.js
-```
-Set content to:
-```javascript
-export const BRAND = "BrandSutra";
-export const API_BASE_URL = "/api";
-```
+`src/config.js` is already configured to use `/api` out of the box (with local Vite proxy configured in `vite.config.js` for local development).
 
 Build the frontend static bundle:
 ```bash
+cd /var/www/Marketing
 npm install
 npm run build
 ```
@@ -216,6 +208,7 @@ sudo certbot renew --dry-run
 - **Pull Latest Updates from `main` Branch**:
   ```bash
   cd /var/www/Marketing
+  git stash
   git checkout main
   git pull origin main
   
