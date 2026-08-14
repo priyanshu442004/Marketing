@@ -208,7 +208,7 @@ sudo certbot renew --dry-run
 - **Pull Latest Updates from `main` Branch**:
   ```bash
   cd /var/www/Marketing
-  git stash
+  git reset --hard HEAD
   git checkout main
   git pull origin main
   

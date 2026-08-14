@@ -1,7 +1,7 @@
 cd /var/www/Marketing
 
-# Reset or stash any local uncommitted changes on EC2 server (e.g. package-lock.json or temporary config edits)
-git stash
+# Force reset any local uncommitted changes on EC2 server
+git reset --hard HEAD
 git checkout main
 git pull origin main
 
