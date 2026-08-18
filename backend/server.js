@@ -4,6 +4,7 @@ const passport = require('passport');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
+const googleRoutes = require('./routes/googleRoutes');
 const marketingRoutes = require('./routes/marketingRoutes');
 const rssRoutes = require('./routes/rssRoutes');
 const websiteRoutes = require('./routes/websiteRoutes');
@@ -27,6 +28,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/google', googleRoutes);
 app.use('/api/marketing', marketingRoutes);
 app.use('/api/rss', rssRoutes);
 app.use('/api/websites', websiteRoutes);

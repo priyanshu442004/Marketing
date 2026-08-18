@@ -5,6 +5,9 @@ import { Button } from "../ui/Button";
 import { Input, Textarea } from "../ui/Input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/Card";
 import { useToast } from "../ui/Toast";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeSanitize from "rehype-sanitize";
 import {
   TrendingUp,
   TrendingDown,
@@ -622,7 +625,7 @@ export function SeoOutput({ data }) {
 }
 
 // Agent 9: Content Generation
-export function ContentGenOutput({ outputs, runId, onUpdateStatus }) {
+export function ContentGenOutput({ outputs, runId, runTopic, onUpdateStatus }) {
   const { toast } = useToast();
   const [commentInput, setCommentInput] = useState({});
   const [activeCommentAsset, setActiveCommentAsset] = useState(null);
@@ -633,6 +636,12 @@ export function ContentGenOutput({ outputs, runId, onUpdateStatus }) {
   if (outputs.blogPost) assetsList.push({ type: "Blog Post", ...outputs.blogPost });
   if (outputs.linkedinPosts) {
     outputs.linkedinPosts.forEach((lp) => assetsList.push({ type: "LinkedIn Post", ...lp }));
+  }
+  if (outputs.instagramPosts) {
+    outputs.instagramPosts.forEach((ip) => assetsList.push({ type: "Instagram Post", ...ip }));
+  }
+  if (outputs.newsletter) {
+    assetsList.push({ type: "Newsletter", ...outputs.newsletter });
   }
   if (outputs.emailSequence) {
     outputs.emailSequence.forEach((em) => assetsList.push({ type: "Email Content", ...em }));
@@ -645,9 +654,6 @@ export function ContentGenOutput({ outputs, runId, onUpdateStatus }) {
   }
   if (outputs.whitepaper) {
     assetsList.push({ type: "Whitepaper", ...outputs.whitepaper });
-  }
-  if (outputs.newsletter) {
-    assetsList.push({ type: "Newsletter", ...outputs.newsletter });
   }
   if (outputs.caseStudy) {
     assetsList.push({ type: "Case Study", ...outputs.caseStudy });
@@ -665,12 +671,18 @@ export function ContentGenOutput({ outputs, runId, onUpdateStatus }) {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-card border border-border bg-surface p-4">
+        <div className="text-[10px] font-mono uppercase tracking-wider text-ink-subtle mb-2">
+          Topic
+        </div>
+        <h2 className="text-lg font-semibold text-ink">{runTopic || 'Untitled Topic'}</h2>
+      </div>
       <div className="flex items-center justify-between">
         <h4 className="text-xs font-mono uppercase tracking-wider text-ink-muted">
           Generated Multi-Format Assets ({assetsList.length})
         </h4>
         <span className="text-[11px] font-mono text-ink-subtle">
-          Supported Formats: Blogs, LinkedIn, Newsletters, Landing Pages, Emails, Whitepapers, Case Studies
+          Supported Formats: Blogs, LinkedIn, Instagram, Newsletters, Landing Pages, Emails, Whitepapers, Case Studies
         </span>
       </div>
 
@@ -686,8 +698,10 @@ export function ContentGenOutput({ outputs, runId, onUpdateStatus }) {
             </div>
 
             {/* Document Content */}
-            <div className="text-xs text-ink leading-relaxed bg-raise/40 p-4 rounded border border-border whitespace-pre-line font-sans">
-              {asset.content || asset.body || asset.headline}
+            <div className="prose prose-sm max-w-none text-ink bg-raise/40 p-4 rounded border border-border font-sans">
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
+                {asset.content || asset.body || asset.headline || ""}
+              </ReactMarkdown>
             </div>
 
             {/* Action Bar */}

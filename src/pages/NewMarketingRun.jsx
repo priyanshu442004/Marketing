@@ -42,11 +42,11 @@ export function NewMarketingRun() {
   const [manualTargetAudience, setManualTargetAudience] = useState("CXOs & VP Operations");
   const [researchKeywordInput, setResearchKeywordInput] = useState("");
   const [researchKeywords, setResearchKeywords] = useState(["Agentic AI", "SCADA", "Manufacturing"]);
-  const [selectedContentTypes, setSelectedContentTypes] = useState(["Blog", "LinkedIn"]);
+  const [selectedContentTypes, setSelectedContentTypes] = useState(["Blog Post", "LinkedIn Post"]);
   const [formErrors, setFormErrors] = useState({});
 
   const allCategories = ["Market News", "Competitor Launches", "Regulatory Shift", "Customer Pain Points", "Product Updates"];
-  const contentTypeOptions = ["Blog", "LinkedIn", "Newsletter", "Webinar", "Whitepaper", "Video Script", "Carousel", "Case Study"];
+  const contentTypeOptions = ["Blog Post", "LinkedIn Post", "Newsletter", "Instagram Post", "Webinar", "Whitepaper", "Video Script", "Carousel", "Case Study"];
 
   const addFeed = () => {
     if (newFeedUrl && !rssFeeds.includes(newFeedUrl)) {
@@ -109,10 +109,14 @@ export function NewMarketingRun() {
     e.preventDefault();
     const errors = {};
 
-    if (isManualFlow) {
-      if (!topic.trim()) errors.topic = "Topic is required for manual research run.";
-    } else {
-      if (rssFeeds.length === 0) errors.rss = "At least one RSS feed is required.";
+    if (!topic.trim()) {
+      errors.topic = isManualFlow
+        ? "Topic is required for manual research run."
+        : "Topic is required for RSS monitoring and content generation.";
+    }
+
+    if (!isManualFlow && rssFeeds.length === 0) {
+      errors.rss = "At least one RSS feed is required.";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -134,11 +138,12 @@ export function NewMarketingRun() {
             contentTypes: selectedContentTypes,
           }
         : {
-            topic: `Automated ${autoIndustry} Intelligence Stream`,
+            topic: topic || `Automated ${autoIndustry} Intelligence Stream`,
             source: "Automated",
             industry: autoIndustry,
             objective: "Build Awareness",
             targetAudience: "Enterprise Decision Makers",
+            contentTypes: selectedContentTypes,
           };
 
       const runId = await createRun(payload);
@@ -271,6 +276,54 @@ export function NewMarketingRun() {
                 </div>
 
                 {/* Categories */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted">
+                    Topic
+                  </label>
+                  <Textarea
+                    rows={3}
+                    placeholder="e.g. Autonomous AI in Industrial Operations"
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    error={formErrors.topic}
+                    helperText="Specify the topic the RSS automation should monitor and generate content about."
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted">
+                    Content Types
+                  </label>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {contentTypeOptions.map((type) => {
+                      const isSelected = selectedContentTypes.includes(type);
+                      return (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() => toggleContentType(type)}
+                          className={`px-3 py-1 text-xs rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                            isSelected
+                              ? "font-medium shadow-sm hover:brightness-105"
+                              : "bg-raise text-ink-muted border-border hover:border-border-strong"
+                          }`}
+                          style={
+                            isSelected
+                              ? {
+                                  backgroundColor: "var(--accent-tint)",
+                                  borderColor: "var(--accent)",
+                                  color: "var(--accent)",
+                                }
+                              : undefined
+                          }
+                        >
+                          {type}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="block text-xs font-mono uppercase tracking-wider text-ink-muted">
                     Monitoring Categories

@@ -63,7 +63,7 @@ const marketingController = {
   // Create new marketing run
   createRun: async (req, res, next) => {
     try {
-      const { topic, industry, targetAudience, triggerMode, userId, rssTriggerUrl } = req.body;
+      const { topic, industry, targetAudience, triggerMode, userId, rssTriggerUrl, contentTypes } = req.body;
 
       const runId = `run-${Date.now()}`;
       const userIdFromReq = req.user?.id || userId || req.headers['x-user-id'];
@@ -110,7 +110,12 @@ const marketingController = {
           },
           logs: {
             create: [
-              { logMessage: `Initialized 10-agent autonomous marketing run for '${topic}'`, logLevel: 'info' },
+              {
+                logMessage: triggerMode === 'RSS_TRIGGERED'
+                  ? `Marketing run created from RSS source ${rssTriggerUrl || 'unknown'}.`
+                  : `Marketing run created for topic '${topic}'.`,
+                logLevel: 'info'
+              },
             ],
           },
         },
@@ -120,8 +125,8 @@ const marketingController = {
         },
       });
 
-      // Trigger pipeline asynchronously with DeepSeek
-      marketingOrchestrator.runMarketingPipeline(newRun.id).catch((err) => {
+      // Trigger pipeline asynchronously with DeepSeek and preserve user-selected content types
+      marketingOrchestrator.runMarketingPipeline(newRun.id, contentTypes).catch((err) => {
         console.error(`Error in async marketing pipeline for ${newRun.id}:`, err);
       });
 
