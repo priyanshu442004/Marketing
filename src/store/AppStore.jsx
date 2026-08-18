@@ -267,14 +267,19 @@ export function AppProvider({ children }) {
     });
 
     const logs = (bRun.logs || []).map(
-      (l) => `${new Date(l.timestamp).toLocaleTimeString()} [${l.logLevel.toUpperCase()}] ${l.logMessage}`
+      (l) => `${new Date(l.timestamp).toLocaleTimeString()} ${l.logMessage}`
     );
 
     const assets = bRun.assets || [];
     const blogAsset = assets.find((a) => a.assetType === "Blog Post");
     const linkedinAssets = assets.filter((a) => a.assetType === "LinkedIn Post");
+    const newsletterAsset = assets.find((a) => a.assetType === "Newsletter");
+    const instagramAssets = assets.filter((a) => a.assetType === "Instagram Post");
     const emailAssets = assets.filter((a) => a.assetType === "Email Content");
     const adAssets = assets.filter((a) => a.assetType === "Ad Copy Variant");
+    const landingPageAsset = assets.find((a) => a.assetType === "Landing Page Copy");
+    const whitepaperAsset = assets.find((a) => a.assetType === "Whitepaper");
+    const caseStudyAsset = assets.find((a) => a.assetType === "Case Study");
     const imageAssets = assets.filter((a) => a.assetType === "Image Prompt");
     const videoAssets = assets.filter((a) => a.assetType === "Video Prompt");
 
@@ -307,8 +312,21 @@ export function AppProvider({ children }) {
           ? { id: blogAsset.id, title: blogAsset.title, readTime: "5 min read", status: blogAsset.status.toLowerCase(), content: blogAsset.content }
           : null,
         linkedinPosts: linkedinAssets.map((a) => ({ id: a.id, type: a.title, status: a.status.toLowerCase(), content: a.content })),
+        newsletter: newsletterAsset
+          ? { id: newsletterAsset.id, subject: newsletterAsset.title, preview: "Newsletter summary", status: newsletterAsset.status.toLowerCase(), content: newsletterAsset.content }
+          : null,
+        instagramPosts: instagramAssets.map((a) => ({ id: a.id, caption: a.title, status: a.status.toLowerCase(), content: a.content })),
         emailSequence: emailAssets.map((a, idx) => ({ id: a.id, step: idx + 1, subject: a.title, preview: "Email draft...", status: a.status.toLowerCase(), body: a.content })),
         adVariants: adAssets.map((a) => ({ id: a.id, headline: a.title, body: a.content, status: a.status.toLowerCase() })),
+        landingPage: landingPageAsset
+          ? { id: landingPageAsset.id, title: landingPageAsset.title, status: landingPageAsset.status.toLowerCase(), content: landingPageAsset.content }
+          : null,
+        whitepaper: whitepaperAsset
+          ? { id: whitepaperAsset.id, title: whitepaperAsset.title, status: whitepaperAsset.status.toLowerCase(), content: whitepaperAsset.content }
+          : null,
+        caseStudy: caseStudyAsset
+          ? { id: caseStudyAsset.id, title: caseStudyAsset.title, status: caseStudyAsset.status.toLowerCase(), content: caseStudyAsset.content }
+          : null,
         creativeAssets: [
           ...imageAssets.map((a) => ({ id: a.id, title: a.title, type: "Image Prompt", dimensions: a.dimensions || "16:9", content: a.content, status: a.status.toLowerCase() })),
           ...videoAssets.map((a) => ({ id: a.id, title: a.title, type: "Video Prompt", dimensions: a.dimensions || "9:16", content: a.content, status: a.status.toLowerCase() }))
@@ -463,7 +481,8 @@ export function AppProvider({ children }) {
           topic: formData.topic || "AI Marketing Strategy Campaign",
           industry: formData.industry || "Enterprise SaaS",
           targetAudience: formData.targetAudience || "Decision Makers",
-          triggerMode: formData.source === "Automated" ? "RSS_TRIGGERED" : "MANUAL"
+          triggerMode: formData.source === "Automated" ? "RSS_TRIGGERED" : "MANUAL",
+          contentTypes: formData.contentTypes || []
         })
       });
       const data = await res.json();

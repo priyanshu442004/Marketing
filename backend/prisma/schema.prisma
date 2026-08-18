@@ -34,12 +34,15 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  marketingRuns   MarketingRun[]
-  websiteAnalyses WebsiteAnalysis[]
-  rssSources      UserRssSource[]
-  connectors      UserConnector[]
-  activityLogs    ActivityLog[]
-  notifications   Notification[]
+  marketingRuns                   MarketingRun[]
+  websiteAnalyses                 WebsiteAnalysis[]
+  rssSources                      UserRssSource[]
+  connectors                      UserConnector[]
+  googleSearchConsoleIntegrations GoogleSearchConsoleIntegration[]
+  googleAnalyticsIntegrations     GoogleAnalyticsIntegration[]
+  googleAdsIntegrations           GoogleAdsIntegration[]
+  activityLogs                    ActivityLog[]
+  notifications                   Notification[]
 
   @@index([email])
   @@index([googleId])
@@ -80,6 +83,169 @@ model UserConnector {
   @@index([userId])
   @@index([connectorId])
   @@map("user_connectors")
+}
+
+model GoogleSearchConsoleIntegration {
+  id             String    @id @default(cuid())
+  userId         String
+  connectorId    String    @default("gsc")
+  siteUrl        String
+  accessToken    String?   @db.Text
+  refreshToken   String?   @db.Text
+  tokenExpiresAt DateTime?
+  scope          String?   @db.Text
+  status         String    @default("active")
+  lastSyncAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user    User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  records GoogleSearchConsoleRecord[]
+
+  @@index([userId])
+  @@index([siteUrl])
+  @@index([status])
+  @@map("google_search_console_integrations")
+}
+
+model GoogleSearchConsoleRecord {
+  id               String   @id @default(cuid())
+  integrationId    String
+  siteUrl          String
+  date             String
+  query            String
+  page             String
+  country          String   @default("all")
+  device           String   @default("DESKTOP")
+  searchType       String   @default("Web")
+  clicks           Int      @default(0)
+  impressions      Int      @default(0)
+  ctr              Float    @default(0)
+  averagePosition  Float    @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  integration GoogleSearchConsoleIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@unique([integrationId, date, query, page, country, device, searchType], map: "gsc_record_unique")
+  @@index([integrationId, date])
+  @@index([integrationId, query])
+  @@index([integrationId, page])
+  @@index([integrationId, country])
+  @@index([integrationId, device])
+  @@index([integrationId, searchType])
+  @@map("google_search_console_records")
+}
+
+model GoogleAnalyticsIntegration {
+  id             String    @id @default(cuid())
+  userId         String
+  connectorId    String    @default("ga4")
+  propertyId     String
+  accessToken    String?   @db.Text
+  refreshToken   String?   @db.Text
+  tokenExpiresAt DateTime?
+  scope          String?   @db.Text
+  status         String    @default("active")
+  lastSyncAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user    User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  records GoogleAnalyticsRecord[]
+
+  @@index([userId])
+  @@index([propertyId])
+  @@index([status])
+  @@map("google_analytics_integrations")
+}
+
+model GoogleAnalyticsRecord {
+  id               String   @id @default(cuid())
+  integrationId    String
+  propertyId       String
+  date             String
+  source           String   @default("")
+  medium           String   @default("")
+  campaign         String   @default("")
+  landingPage      String   @default("")
+  eventName        String   @default("")
+  users            Int      @default(0)
+  sessions         Int      @default(0)
+  engagedSessions  Int      @default(0)
+  engagementRate   Float    @default(0)
+  keyEvents        Int      @default(0)
+  totalRevenue     Float    @default(0)
+  eventCount       Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  integration GoogleAnalyticsIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@unique([integrationId, date, source, medium, campaign, landingPage, eventName], map: "ga4_record_unique")
+  @@index([integrationId, date])
+  @@index([integrationId, source])
+  @@index([integrationId, landingPage])
+  @@index([integrationId, campaign])
+  @@index([integrationId, eventName])
+  @@map("google_analytics_records")
+}
+
+model GoogleAdsIntegration {
+  id             String    @id @default(cuid())
+  userId         String
+  connectorId    String    @default("ads")
+  customerId     String
+  accessToken    String?   @db.Text
+  refreshToken   String?   @db.Text
+  tokenExpiresAt DateTime?
+  scope          String?   @db.Text
+  status         String    @default("active")
+  lastSyncAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user    User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  records GoogleAdsPerformance[]
+
+  @@index([userId])
+  @@index([customerId])
+  @@index([status])
+  @@map("google_ads_integrations")
+}
+
+model GoogleAdsPerformance {
+  id                String   @id @default(cuid())
+  integrationId     String
+  customerId        String
+  date              String
+  campaignId        String   @default("")
+  campaignName      String   @default("")
+  campaignStatus    String   @default("")
+  adGroupId         String   @default("")
+  adGroupName       String   @default("")
+  keywordId         String   @default("")
+  keywordText       String   @default("")
+  matchType         String   @default("")
+  impressions       Int      @default(0)
+  clicks            Int      @default(0)
+  costMicros        BigInt   @default(0)
+  conversions       Float    @default(0)
+  conversionsValue  Float    @default(0)
+  ctr               Float    @default(0)
+  averageCpc        Float    @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  integration GoogleAdsIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+
+  @@unique([integrationId, date, customerId, campaignId, adGroupId, keywordId, keywordText, matchType], map: "ads_record_unique")
+  @@index([integrationId, date])
+  @@index([integrationId, customerId])
+  @@index([integrationId, campaignId])
+  @@index([integrationId, adGroupId])
+  @@index([integrationId, keywordText])
+  @@map("google_ads_performance")
 }
 
 // ======================================================

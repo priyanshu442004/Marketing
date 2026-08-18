@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/AppStore";
 import { SEO } from "../components/common/SEO";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { Badge, StatusChip } from "../components/ui/Badge";
+import { API_BASE_URL } from "../config";
 import {
   Sparkles,
   Globe,
@@ -22,6 +23,33 @@ import {
 export function Dashboard() {
   const navigate = useNavigate();
   const { runs, analyses } = useAppStore();
+  const [gscOverview, setGscOverview] = useState({ clicks: 0, impressions: 0, ctr: 0, avgPosition: 0 });
+
+  useEffect(() => {
+    const fetchOverview = async () => {
+      const token = localStorage.getItem("brandsutra_token");
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/google/gsc/overview`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.success && data.data) {
+          setGscOverview({
+            clicks: data.data.clicks || 0,
+            impressions: data.data.impressions || 0,
+            ctr: data.data.ctr || 0,
+            avgPosition: data.data.avgPosition || 0,
+          });
+        }
+      } catch (error) {
+        console.warn("GSC overview unavailable", error);
+      }
+    };
+
+    fetchOverview();
+  }, []);
 
   // Calculate top metrics
   const activeRunsCount = runs.filter((r) => r.status === "running").length;
@@ -134,6 +162,29 @@ export function Dashboard() {
             <span className="text-2xl font-bold font-mono text-ink">{avgHealthScore}/100</span>
             <span className="text-[10px] font-mono text-ink-subtle">Target &gt;80</span>
           </div>
+        </div>
+      </div>
+
+      <div className="bg-surface p-4 rounded-card border border-border grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="rounded bg-raise p-3">
+          <div className="text-[10px] font-mono uppercase text-ink-subtle">Organic Clicks</div>
+          <div className="mt-1 text-xl font-bold font-mono text-ink">{gscOverview.clicks}</div>
+        </div>
+        <div className="rounded bg-raise p-3">
+          <div className="text-[10px] font-mono uppercase text-ink-subtle">Impressions</div>
+          <div className="mt-1 text-xl font-bold font-mono text-ink">{gscOverview.impressions}</div>
+        </div>
+        <div className="rounded bg-raise p-3">
+          <div className="text-[10px] font-mono uppercase text-ink-subtle">CTR</div>
+          <div className="mt-1 text-xl font-bold font-mono text-ink">{(gscOverview.ctr * 100).toFixed(1)}%</div>
+        </div>
+        <div className="rounded bg-raise p-3">
+          <div className="text-[10px] font-mono uppercase text-ink-subtle">Avg Position</div>
+          <div className="mt-1 text-xl font-bold font-mono text-ink">{gscOverview.avgPosition.toFixed(1)}</div>
+        </div>
+        <div className="rounded bg-raise p-3">
+          <div className="text-[10px] font-mono uppercase text-ink-subtle">SEO Opportunities</div>
+          <div className="mt-1 text-xl font-bold font-mono text-accent">{Math.max(2, Math.round(gscOverview.impressions / 2500))}</div>
         </div>
       </div>
 

@@ -188,6 +188,7 @@ export function MarketingRunDetail() {
           <ContentGenOutput
             outputs={run.outputs}
             runId={run.id}
+            runTopic={run.topic}
             onUpdateStatus={updateAssetStatus}
           />
         );
